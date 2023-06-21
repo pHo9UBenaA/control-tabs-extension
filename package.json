@@ -1,0 +1,22 @@
+{
+	"name": "cleaner-extension",
+	"version": "0.0.0",
+	"scripts": {
+		"build": "node esbuild.js",
+		"_lint": "eslint . --ignore-path .gitignore",
+		"lint": "pnpm run _lint; pnpm run _prettier",
+		"lint:fix": "pnpm run _lint -- --fix; pnpm run _prettier -- --write",
+		"_prettier": "prettier \".\" --check --ignore-path \".gitignore\""
+	},
+	"devDependencies": {
+		"@types/chrome": "^0.0.236",
+		"dotenv": "^16.0.3",
+		"esbuild": "^0.17.18",
+		"esbuild-copy-static-files": "^0.1.0",
+		"eslint": "^8.39.0",
+		"eslint-config-prettier": "^8.8.0",
+		"glob": "^10.2.3",
+		"prettier": "^2.8.8",
+		"typescript": "^5.0.4"
+	}
+}
