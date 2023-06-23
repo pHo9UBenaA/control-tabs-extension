@@ -1,9 +1,22 @@
 {
 	"manifest_version": 3,
-	"name": "Merge Window Extension",
+	"name": "__MSG_extensionName__",
+	"short_name": "Control Tabs",
 	"version": "0.0.1",
+	"description": "__MSG_extensionDescription__",
+	"default_locale": "en",
+	"author": "pHo9UBenaA",
 	"action": {
-		"default_popup": "popup.html"
+		"default_icon": "icon.png"
 	},
-	"permissions": ["tabs"]
+	"icons": {
+		"16": "icon.png",
+		"48": "icon.png",
+		"128": "icon.png"
+	},
+	"background": {
+		"service_worker": "background.js"
+	},
+	"permissions": ["tabs", "contextMenus"],
+	"incognito": "spanning"
 }

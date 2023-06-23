@@ -1,0 +1,18 @@
+{
+	"extensionName": {
+		"message": "Control Tabs Extension",
+		"description": "Name of the extension."
+	},
+	"extensionDescription": {
+		"message": "Control Tabs Extension",
+		"description": "Description of the extension."
+	},
+	"mergeWindowTitle": {
+		"message": "Merge Window",
+		"description": "Title of the merge window."
+	},
+	"mergeSecretWindowTitle": {
+		"message": "Merge Secret Window",
+		"description": "Title of the merge secret window."
+	}
+}

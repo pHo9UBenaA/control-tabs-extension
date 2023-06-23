@@ -1,4 +1,4 @@
-# merge-window-extension
+# control-tabs-extension
 
 ```bash
 docker compose up -d --build
