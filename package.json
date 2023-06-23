@@ -9,7 +9,7 @@
 		"_prettier": "prettier \".\" --check --ignore-path \".gitignore\""
 	},
 	"devDependencies": {
-		"@types/chrome": "^0.0.236",
+		"@types/chrome": "^0.0.237",
 		"dotenv": "^16.0.3",
 		"esbuild": "^0.17.18",
 		"esbuild-copy-static-files": "^0.1.0",
