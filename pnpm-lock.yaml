@@ -2,8 +2,8 @@ lockfileVersion: '6.0'
 
 devDependencies:
   '@types/chrome':
-    specifier: ^0.0.236
-    version: 0.0.236
+    specifier: ^0.0.237
+    version: 0.0.237
   dotenv:
     specifier: ^16.0.3
     version: 16.0.3
@@ -326,8 +326,8 @@ packages:
     dev: true
     optional: true
 
-  /@types/chrome@0.0.236:
-    resolution: {integrity: sha512-ArQoxO9WtDY6GWcT2cpo+D+hyASPeFt7PHQEUDXwQhRS00Rbop07rnEOA046yws0HkM83Tcew/hW6Dgvnj4iMQ==}
+  /@types/chrome@0.0.237:
+    resolution: {integrity: sha512-krsRmyfMlck5r+H1EapsrrucDRq6iRm0NAi5fapr93CgnpVMDdK+h2+z4x79GegdW7BNH9Vb//gkptORwwwVIQ==}
     dependencies:
       '@types/filesystem': 0.0.32
       '@types/har-format': 1.2.11
