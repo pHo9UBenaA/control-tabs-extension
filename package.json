@@ -4,9 +4,9 @@
 	"scripts": {
 		"build": "node esbuild.js",
 		"_lint": "eslint . --ignore-path .gitignore",
+		"_prettier": "prettier \".\" --check --ignore-path \".gitignore\"",
 		"lint": "pnpm run _lint; pnpm run _prettier",
-		"lint:fix": "pnpm run _lint -- --fix; pnpm run _prettier -- --write",
-		"_prettier": "prettier \".\" --check --ignore-path \".gitignore\""
+		"lint:fix": "pnpm run _lint --fix; pnpm run _prettier --write \".\""
 	},
 	"devDependencies": {
 		"@types/chrome": "^0.0.237",

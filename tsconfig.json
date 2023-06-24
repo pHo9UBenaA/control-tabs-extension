@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "es2016",
+		"target": "es2019",
 		"module": "commonjs",
 		"types": ["chrome"],
 		"esModuleInterop": true,
@@ -9,6 +9,6 @@
 		"skipLibCheck": true,
 		"declaration": true
 	},
-	"include": ["src/*"],
+	"include": ["src/*", "src/handlers/merge-window.ts"],
 	"exclude": ["node_modules", "dist"]
 }
