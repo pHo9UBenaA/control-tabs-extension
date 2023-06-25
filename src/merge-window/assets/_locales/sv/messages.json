@@ -1,0 +1,10 @@
+{
+	"mergeWindowTitle": {
+		"message": "Sammanfoga fönster",
+		"description": "Title of the merge window."
+	},
+	"mergeIncognitoWindowTitle": {
+		"message": "Sammanfoga inkognitofönster",
+		"description": "Title of the merge secret window."
+	}
+}

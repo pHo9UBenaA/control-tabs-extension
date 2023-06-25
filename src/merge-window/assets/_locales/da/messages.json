@@ -1,0 +1,10 @@
+{
+	"mergeWindowTitle": {
+		"message": "Flet vinduer",
+		"description": "Titel på fletningsvinduet."
+	},
+	"mergeIncognitoWindowTitle": {
+		"message": "Flet inkognitovinduer",
+		"description": "Titel på fletning af inkognitovindue."
+	}
+}

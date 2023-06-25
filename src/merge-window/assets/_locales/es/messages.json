@@ -1,0 +1,10 @@
+{
+	"mergeWindowTitle": {
+		"message": "Combinar ventanas",
+		"description": "Título de la ventana combinada."
+	},
+	"mergeIncognitoWindowTitle": {
+		"message": "Combinar ventanas de incógnito",
+		"description": "Título de la ventana combinada de incógnito."
+	}
+}

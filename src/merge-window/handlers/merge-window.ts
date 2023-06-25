@@ -18,13 +18,13 @@ const mergeWindow = (windowIds: number[]) => {
 	};
 
 	if (windowIds.length <= 1) {
-		console.info('There was only one secret window.');
+		console.info('There was only one window.');
 		return;
 	}
 
 	const firstWindowId = windowIds.shift();
 	if (!firstWindowId) {
-		console.error('The first secret window could not be found.');
+		console.error('The first window could not be found.');
 		return;
 	}
 

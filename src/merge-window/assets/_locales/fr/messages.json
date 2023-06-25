@@ -1,0 +1,10 @@
+{
+	"mergeWindowTitle": {
+		"message": "Fusionner les fenêtres",
+		"description": "Titre de la fenêtre fusionnée."
+	},
+	"mergeIncognitoWindowTitle": {
+		"message": "Fusionner les fenêtres en mode incognito",
+		"description": "Titre de la fenêtre fusionnée en mode incognito."
+	}
+}

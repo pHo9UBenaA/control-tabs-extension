@@ -1,0 +1,10 @@
+{
+	"mergeWindowTitle": {
+		"message": "Zlúčiť okno",
+		"description": "Title of the merge window."
+	},
+	"mergeIncognitoWindowTitle": {
+		"message": "Zlúčiť okno inkognito",
+		"description": "Title of the merge secret window."
+	}
+}

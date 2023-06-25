@@ -1,0 +1,10 @@
+{
+	"mergeWindowTitle": {
+		"message": "Ablakok összevonása",
+		"description": "Az összevont ablak címe."
+	},
+	"mergeIncognitoWindowTitle": {
+		"message": "Az inkognitó ablakok összevonása",
+		"description": "Az összevont inkognitó ablak címe."
+	}
+}
