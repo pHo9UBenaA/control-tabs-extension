@@ -1,0 +1,10 @@
+{
+	"mergeWindowTitle": {
+		"message": "Spojite prozore",
+		"description": "Naslov spojnog prozora."
+	},
+	"mergeIncognitoWindowTitle": {
+		"message": "Spojite inkognito prozore",
+		"description": "Naslov spojnog inkognito prozora."
+	}
+}

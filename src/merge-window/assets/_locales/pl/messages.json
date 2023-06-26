@@ -1,0 +1,10 @@
+{
+	"mergeWindowTitle": {
+		"message": "Scal okno",
+		"description": "Title of the merge window."
+	},
+	"mergeIncognitoWindowTitle": {
+		"message": "Scal okno prywatne",
+		"description": "Title of the merge secret window."
+	}
+}

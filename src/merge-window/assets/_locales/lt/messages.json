@@ -1,0 +1,10 @@
+{
+	"mergeWindowTitle": {
+		"message": "Sujungti langus",
+		"description": "Susijungusiame lange esantis pavadinimas."
+	},
+	"mergeIncognitoWindowTitle": {
+		"message": "Sujungti inkognito lango",
+		"description": "Susijungusiame inkognito lange esantis pavadinimas."
+	}
+}

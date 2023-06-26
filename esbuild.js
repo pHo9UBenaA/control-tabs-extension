@@ -1,39 +1,43 @@
 const srcDirName = 'src';
 const distDirName = 'dist';
 
-// esbuildオプションのentryPointsとoutdirを作成
 const path = require('path');
 const glob = require('glob');
 
 const srcDir = path.join(__dirname, srcDirName);
 const distDir = path.join(__dirname, distDirName);
 
-const entryPoints = glob.sync(`${srcDir}/*.ts`);
-const outdir = distDir;
+const directories = ['merge-window'];
+const optionsArray = directories.map((dir) => {
+	const entryPoints = glob.sync(`${srcDir}/${dir}/*.ts`);
+	const outdir = `${distDir}/${dir}`;
 
-// copyプラグイン
-const copyStaticFiles = require('esbuild-copy-static-files');
-const copyAssets = copyStaticFiles({
-	src: `./${srcDirName}/assets`,
-	dest: `./${distDirName}`,
-	dereference: true,
-	errorOnExist: false,
+	const copyStaticFiles = require('esbuild-copy-static-files');
+	const copyAssets = copyStaticFiles({
+		src: `./${srcDirName}/${dir}/assets`,
+		dest: `./${distDirName}/${dir}`,
+		dereference: true,
+		errorOnExist: false,
+	});
+
+	const options = {
+		entryPoints,
+		outdir,
+		outbase: `./${srcDirName}/${dir}`,
+		platform: 'browser',
+		external: [],
+		bundle: true,
+		tsconfig: './tsconfig.json',
+		plugins: [copyAssets],
+	};
+
+	return options;
 });
 
-// ビルド
-const options = {
-	entryPoints,
-	outdir,
-	outbase: `./${srcDirName}`,
-	platform: 'browser',
-	external: [],
-	bundle: true,
-	tsconfig: './tsconfig.json',
-	plugins: [copyAssets],
-};
-
 const { build } = require('esbuild');
-build(options).catch((err) => {
-	process.stderr.write(err.stderr);
-	process.exit(1);
+optionsArray.forEach((options) => {
+	build(options).catch((err) => {
+		process.stderr.write(err.stderr);
+		process.exit(1);
+	});
 });

@@ -1,0 +1,10 @@
+{
+	"mergeWindowTitle": {
+		"message": "Vensters samenvoegen",
+		"description": "Titel van het samengevoegde venster."
+	},
+	"mergeIncognitoWindowTitle": {
+		"message": "Inkognito vensters samenvoegen",
+		"description": "Titel van het samengevoegde inkognitovenster."
+	}
+}

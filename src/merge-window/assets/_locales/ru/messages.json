@@ -1,0 +1,10 @@
+{
+	"mergeWindowTitle": {
+		"message": "Объединить окно",
+		"description": "Title of the merge window."
+	},
+	"mergeIncognitoWindowTitle": {
+		"message": "Объединить окно инкогнито",
+		"description": "Title of the merge secret window."
+	}
+}
