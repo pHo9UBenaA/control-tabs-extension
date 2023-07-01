@@ -1,22 +1,20 @@
+const moveTabs = (tabs: chrome.tabs.Tab[], firstWindowId: number): number => {
+	const tabIds = tabs
+		.map((tab) => tab.id)
+		.flatMap((tabId) => (tabId !== undefined ? [tabId] : []));
+
+	tabIds.forEach((id) =>
+		chrome.tabs.move(id, {
+			windowId: firstWindowId,
+			index: -1,
+		})
+	);
+
+	const fatalCount = tabs.length - tabIds.length;
+	return fatalCount;
+};
+
 const mergeWindow = (windowIds: number[]) => {
-	const moveTabs = (tabs: chrome.tabs.Tab[], firstWindowId: number) => {
-		const tabIds = tabs
-			.map((tab) => tab.id)
-			.flatMap((tabId) => (tabId !== undefined ? [tabId] : []));
-
-		tabIds.forEach((id) =>
-			chrome.tabs.move(id, {
-				windowId: firstWindowId,
-				index: -1,
-			})
-		);
-
-		const fatalCount = tabs.length - tabIds.length;
-		if (fatalCount) {
-			console.error(`Merge skipped because ${fatalCount} tab IDs could not be found`);
-		}
-	};
-
 	if (windowIds.length <= 1) {
 		console.info('There was only one window.');
 		return;
@@ -30,12 +28,15 @@ const mergeWindow = (windowIds: number[]) => {
 
 	windowIds.forEach((windowId) => {
 		chrome.tabs.query({ windowId }, (tabs) => {
-			moveTabs(tabs, firstWindowId);
+			const fatalCount = moveTabs(tabs, firstWindowId);
+			if (fatalCount) {
+				console.error(`Merge skipped because ${fatalCount} tab IDs could not be found`);
+			}
 		});
 	});
 };
 
-const mergeWindowEventHandler = () => {
+const handleMergeWindowEvent = () => {
 	chrome.windows.getAll({ populate: true }, (windows) => {
 		const windowIds: number[] = windows
 			.filter((window) => !window.incognito && window.type === 'normal')
@@ -44,7 +45,7 @@ const mergeWindowEventHandler = () => {
 	});
 };
 
-const mergeSecretWindowEventHandler = () => {
+const handleMergeSecretWindowEvent = () => {
 	chrome.windows.getAll({ populate: true }, (windows) => {
 		const secretWindowIds: number[] = windows
 			.filter((window) => window.incognito && window.type === 'normal')
@@ -53,4 +54,4 @@ const mergeSecretWindowEventHandler = () => {
 	});
 };
 
-export { mergeWindowEventHandler, mergeSecretWindowEventHandler };
+export { handleMergeWindowEvent, handleMergeSecretWindowEvent };

@@ -1,28 +1,27 @@
 import { contextMenusIds } from './constants/context-menus';
-import { mergeSecretWindowEventHandler, mergeWindowEventHandler } from './handlers/merge-window';
+import { handleMergeWindowEvent, handleMergeSecretWindowEvent } from './handles/merge-window';
 
-const handlerMapper = {
-	[contextMenusIds.mergeWindow]: mergeWindowEventHandler,
-	[contextMenusIds.mergeSecretWindow]: mergeSecretWindowEventHandler,
+const handleMapper = {
+	[contextMenusIds.mergeWindow]: handleMergeWindowEvent,
+	[contextMenusIds.mergeSecretWindow]: handleMergeSecretWindowEvent,
 } as const satisfies { [key in keyof typeof contextMenusIds]: () => void };
 
 const initContextMenus = () => {
+	const createContextMenu = (id: string, message: string) => {
+		chrome.contextMenus.create({
+			id,
+			title: chrome.i18n.getMessage(message),
+			contexts: ['all'],
+		});
+	};
+
 	const removeAllContextMenus = () => {
 		chrome.contextMenus.removeAll();
 	};
 
 	const createContextMenus = () => {
-		chrome.contextMenus.create({
-			id: contextMenusIds.mergeWindow,
-			title: chrome.i18n.getMessage('mergeWindowTitle'),
-			contexts: ['all'],
-		});
-
-		chrome.contextMenus.create({
-			id: contextMenusIds.mergeSecretWindow,
-			title: chrome.i18n.getMessage('mergeIncognitoWindowTitle'),
-			contexts: ['all'],
-		});
+		createContextMenu(contextMenusIds.mergeWindow, 'mergeWindowTitle');
+		createContextMenu(contextMenusIds.mergeSecretWindow, 'mergeIncognitoWindowTitle');
 	};
 
 	removeAllContextMenus();
@@ -37,24 +36,21 @@ const updateMergeSecretWindowContextMenu = async () => {
 };
 
 chrome.runtime.onInstalled.addListener(() => {
-	console.info('debug: background.ts onInstalled');
 	initContextMenus();
 	updateMergeSecretWindowContextMenu();
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
 	const menuItemId = info.menuItemId.toString();
-	if (menuItemId in handlerMapper) {
-		// TODO
-		handlerMapper[menuItemId as keyof typeof handlerMapper]();
+	if (menuItemId in handleMapper) {
+		handleMapper[menuItemId]();
 	}
 });
 
 chrome.action.onClicked.addListener((tab) => {
-	const handler = Object.values(handlerMapper);
-	handler.forEach((handler) => handler());
+	const handles = Object.values(handleMapper);
+	handles.forEach((handle) => handle());
 });
 
-// シークレットウィンドウの設定の変更を検知したい
+// TODO
 updateMergeSecretWindowContextMenu();
-console.info('debug: background.ts');
