@@ -9,7 +9,7 @@
 		"lint:fix": "pnpm run _lint --fix; pnpm run _prettier --write \".\""
 	},
 	"devDependencies": {
-		"@types/chrome": "^0.0.238",
+		"@types/chrome": "^0.0.239",
 		"dotenv": "^16.3.1",
 		"esbuild": "^0.18.9",
 		"esbuild-copy-static-files": "^0.1.0",
