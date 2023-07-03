@@ -1,0 +1,19 @@
+{
+	"extensionName": {
+		"message": "Tab Cleaner",
+		"description": "Name of the extension."
+	},
+	"extensionShortName": {
+		"message": "Tab Cleaner",
+		"description": "Name of the extension."
+	},
+	"extensionDescription": {
+		"message": "Clean up tabs with specified domains",
+		"description": "Description of the extension."
+	},
+
+	"clearTabTitle": {
+		"message": "Clear Tabs",
+		"description": "Title of the merge window."
+	}
+}

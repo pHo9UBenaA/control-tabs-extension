@@ -7,7 +7,7 @@ const glob = require('glob');
 const srcDir = path.join(__dirname, srcDirName);
 const distDir = path.join(__dirname, distDirName);
 
-const directories = ['merge-window'];
+const directories = ['merge-window', 'tab-cleaner'];
 const optionsArray = directories.map((dir) => {
 	const entryPoints = glob.sync(`${srcDir}/${dir}/*.ts`);
 	const outdir = `${distDir}/${dir}`;
