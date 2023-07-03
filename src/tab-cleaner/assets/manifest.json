@@ -1,0 +1,17 @@
+{
+	"manifest_version": 3,
+	"name": "__MSG_extensionName__",
+	"short_name": "__MSG_extensionShortName__",
+	"version": "0.0.1",
+	"description": "__MSG_extensionDescription__",
+	"default_locale": "en",
+	"author": "pHo9UBenaA",
+	"background": {
+		"service_worker": "background.js"
+	},
+	"action": {
+		"default_title": "Open Options"
+	},
+	"options_page": "options.html",
+	"permissions": ["storage", "contextMenus", "tabs"]
+}
