@@ -6,26 +6,22 @@ const handleMapper = {
 	[contextMenusIds.mergeSecretWindow]: handleMergeSecretWindowEvent,
 } as const satisfies { [key in keyof typeof contextMenusIds]: () => void };
 
+const removeAllContextMenus = () => {
+	chrome.contextMenus.removeAll();
+};
+
+const createContextMenu = (id: string, message: string) => {
+	chrome.contextMenus.create({
+		id,
+		title: chrome.i18n.getMessage(message),
+		contexts: ['all'],
+	});
+};
+
 const initContextMenus = () => {
-	const createContextMenu = (id: string, message: string) => {
-		chrome.contextMenus.create({
-			id,
-			title: chrome.i18n.getMessage(message),
-			contexts: ['all'],
-		});
-	};
-
-	const removeAllContextMenus = () => {
-		chrome.contextMenus.removeAll();
-	};
-
-	const createContextMenus = () => {
-		createContextMenu(contextMenusIds.mergeWindow, 'mergeWindowTitle');
-		createContextMenu(contextMenusIds.mergeSecretWindow, 'mergeIncognitoWindowTitle');
-	};
-
 	removeAllContextMenus();
-	createContextMenus();
+	createContextMenu(contextMenusIds.mergeWindow, 'mergeWindowTitle');
+	createContextMenu(contextMenusIds.mergeSecretWindow, 'mergeIncognitoWindowTitle');
 };
 
 const updateMergeSecretWindowContextMenu = async () => {

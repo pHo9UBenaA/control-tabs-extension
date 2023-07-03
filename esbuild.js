@@ -23,6 +23,7 @@ const optionsArray = directories.map((dir) => {
 	const options = {
 		entryPoints,
 		outdir,
+		minify: true,
 		outbase: `./${srcDirName}/${dir}`,
 		platform: 'browser',
 		external: [],
