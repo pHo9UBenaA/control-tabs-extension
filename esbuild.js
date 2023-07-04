@@ -41,7 +41,7 @@ const tsOptionsArray = directories.map((dir) => {
 });
 
 const tsxOptionsArray = directories.map((dir) => {
-	const entryPoints = glob.sync(`${srcDir}/${dir}/*.tsx`);
+	const entryPoints = glob.sync(`${srcDir}/${dir}/options.tsx`);
 	const outdir = `${distDir}/${dir}`;
 
 	const options = {

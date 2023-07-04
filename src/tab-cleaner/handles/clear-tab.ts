@@ -1,5 +1,5 @@
 import { StorageKey } from '../constants/storage';
-import { Domain, ClearHistory } from '../models/storage';
+import { ClearHistory, Domain } from '../models/storage';
 
 const removeTabsByDomain = (domain: string): Promise<void> => {
 	return new Promise((resolve) => {
@@ -19,16 +19,19 @@ const removeTabsByDomain = (domain: string): Promise<void> => {
 					...clearHistories,
 					...prevClearHistories,
 				];
-				chrome.storage.local.set({
-					[StorageKey.clearHistories]: updateClearHistories,
-				}, resolve); // Callback function to resolve the Promise once the set operation completes
+				chrome.storage.local.set(
+					{
+						[StorageKey.clearHistories]: updateClearHistories,
+					},
+					() => resolve()
+				); // Callback function to resolve the Promise once the set operation completes
 			});
 		});
 	});
 };
 
 const handleClearTabEvent = () => {
-	chrome.storage.local.get(StorageKey.domains, async(data) => {
+	chrome.storage.local.get(StorageKey.domains, async (data) => {
 		const domains: Domain[] = data.domains || [];
 		for (let domain of domains) {
 			await removeTabsByDomain(domain);
