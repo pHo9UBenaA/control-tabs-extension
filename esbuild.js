@@ -8,7 +8,16 @@ const srcDir = path.join(__dirname, srcDirName);
 const distDir = path.join(__dirname, distDirName);
 
 const directories = ['merge-window', 'tab-cleaner'];
-const optionsArray = directories.map((dir) => {
+
+const optionsStatic = {
+	bundle: true,
+	minify: true,
+	treeShaking: true,
+	platform: 'browser',
+	tsconfig: './tsconfig.json',
+};
+
+const tsOptionsArray = directories.map((dir) => {
 	const entryPoints = glob.sync(`${srcDir}/${dir}/*.ts`);
 	const outdir = `${distDir}/${dir}`;
 
@@ -21,22 +30,38 @@ const optionsArray = directories.map((dir) => {
 	});
 
 	const options = {
+		...optionsStatic,
 		entryPoints,
 		outdir,
-		minify: true,
 		outbase: `./${srcDirName}/${dir}`,
-		platform: 'browser',
-		external: [],
-		bundle: true,
-		tsconfig: './tsconfig.json',
 		plugins: [copyAssets],
 	};
 
 	return options;
 });
 
+const tsxOptionsArray = directories.map((dir) => {
+	const entryPoints = glob.sync(`${srcDir}/${dir}/*.tsx`);
+	const outdir = `${distDir}/${dir}`;
+
+	const options = {
+		...optionsStatic,
+		entryPoints,
+		outdir,
+	};
+
+	return options;
+});
+
 const { build } = require('esbuild');
-optionsArray.forEach((options) => {
+tsOptionsArray.forEach((options) => {
+	build(options).catch((err) => {
+		process.stderr.write(err.stderr);
+		process.exit(1);
+	});
+});
+
+tsxOptionsArray.forEach((options) => {
 	build(options).catch((err) => {
 		process.stderr.write(err.stderr);
 		process.exit(1);
