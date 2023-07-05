@@ -30,7 +30,7 @@ const contextMenusAddListener = () => {
 	chrome.contextMenus.onClicked.addListener((info, tab) => {
 		const menuItemId = info.menuItemId.toString();
 		if (menuItemId in handleMapper) {
-			handleMapper[menuItemId]();
+			handleMapper[menuItemId as keyof typeof ContextMenuIds]();
 		}
 	});
 };

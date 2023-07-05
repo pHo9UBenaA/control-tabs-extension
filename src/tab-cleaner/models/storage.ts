@@ -6,4 +6,4 @@ type ClearHistory = {
 	url: string | undefined;
 };
 
-export { Domain, ClearHistory };
+export { ClearHistory, Domain };
