@@ -1,4 +1,4 @@
-import { Box, Button, Input } from '@chakra-ui/react';
+import { Box, Button, Input, Tooltip } from '@chakra-ui/react';
 import React, { useRef } from 'react';
 
 type FileUploadButtonProps = {
@@ -63,9 +63,14 @@ export const FileUploadButton: React.FC<FileUploadButtonProps> = ({ onFileUpload
 			<Box display='none'>
 				<Input type='file' accept='.txt' onChange={handleFileUpload} ref={fileInputRef} />
 			</Box>
-			<Button onClick={handleButtonClick} size='sm'>
-				Upload .txt file
-			</Button>
+			<Tooltip
+				label='In the txt file, you need to enter the domain one line at a time'
+				placement='top'
+			>
+				<Button onClick={handleButtonClick} size='sm'>
+					Upload .txt file
+				</Button>
+			</Tooltip>
 		</>
 	);
 };

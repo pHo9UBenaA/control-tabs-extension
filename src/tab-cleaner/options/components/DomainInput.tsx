@@ -10,9 +10,12 @@ export const DomainInput: React.FC<DomainInputProps> = ({ onDomainSubmit }) => {
 	const [error, setError] = useState('');
 
 	const handleDomainSubmit = () => {
-		//TODO
+		//TODO .com
 		try {
-			const url = new URL(domainInputValue);
+			const domainAddSchema = domainInputValue.includes('://')
+				? domainInputValue
+				: `http://${domainInputValue}`;
+			const url = new URL(domainAddSchema);
 			onDomainSubmit(url.hostname);
 			setDomainInputValue('');
 			setError('');

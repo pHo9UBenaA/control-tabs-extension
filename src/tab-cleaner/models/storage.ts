@@ -1,9 +1,12 @@
 type Domain = string;
 
 type ClearHistory = {
-	id: number | undefined;
+	id: number;
+	// TODO: (x): x is ClearHistory => x !== undefined
 	title: string | undefined;
 	url: string | undefined;
 };
 
-export { ClearHistory, Domain };
+type RemoveNewTab = boolean;
+
+export { ClearHistory, Domain, RemoveNewTab };
