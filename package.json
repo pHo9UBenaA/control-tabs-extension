@@ -9,6 +9,7 @@
 		"lint:fix": "pnpm run _lint --fix; pnpm run _prettier --write \".\""
 	},
 	"devDependencies": {
+		"@chakra-ui/react": "^2.7.1",
 		"@types/chrome": "^0.0.239",
 		"@types/react": "^18.2.14",
 		"@types/react-dom": "^18.2.6",
@@ -22,8 +23,5 @@
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"typescript": "^5.1.6"
-	},
-	"dependencies": {
-		"@chakra-ui/react": "^2.7.1"
 	}
 }

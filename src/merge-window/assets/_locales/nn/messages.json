@@ -11,7 +11,7 @@
 		"message": "Merge windows per Profile",
 		"description": "Description of the extension."
 	},
-	
+
 	"mergeWindowTitle": {
 		"message": "Flett vindauge",
 		"description": "Tittel på samanfletta vindauge."

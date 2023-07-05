@@ -11,7 +11,7 @@
 		"message": "Merge windows per Profile",
 		"description": "Description of the extension."
 	},
-	
+
 	"mergeWindowTitle": {
 		"message": "Fusionner les fenêtres",
 		"description": "Titre de la fenêtre fusionnée."

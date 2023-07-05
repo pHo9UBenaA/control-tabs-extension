@@ -1,6 +1,7 @@
 import { Link, List, ListItem } from '@chakra-ui/react';
 import React from 'react';
-import { ClearHistory } from '../models/storage';
+// TODO alias
+import { ClearHistory } from '../../models/storage';
 
 type ClearHistoryProps = {
 	clearHistories?: ClearHistory[];

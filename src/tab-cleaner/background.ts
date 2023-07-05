@@ -3,7 +3,7 @@ import { handleClearTabEvent } from './handles/clear-tab';
 
 const handleMapper = {
 	[ContextMenuIds.clearTab]: handleClearTabEvent,
-} as const satisfies { [key in keyof typeof ContextMenuIds]: () => void };
+} as const satisfies { [key in ContextMenuIds]: () => void };
 
 const initContextMenus = () => {
 	const removeAllContextMenus = () => {
@@ -30,7 +30,7 @@ const contextMenusAddListener = () => {
 	chrome.contextMenus.onClicked.addListener((info, tab) => {
 		const menuItemId = info.menuItemId.toString();
 		if (menuItemId in handleMapper) {
-			handleMapper[menuItemId as keyof typeof ContextMenuIds]();
+			handleMapper[menuItemId as ContextMenuIds]();
 		}
 	});
 };
