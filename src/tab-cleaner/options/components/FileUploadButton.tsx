@@ -5,6 +5,26 @@ type FileUploadButtonProps = {
 	onFileUpload: (content: string) => void;
 };
 
+const readFileAsText = (
+	file: File,
+	onSuccess: (content: string) => void,
+	onError: (error: Error) => void
+): void => {
+	const reader = new FileReader();
+	reader.onload = (e) => {
+		const content = e.target?.result;
+		if (typeof content !== 'string') {
+			onError(new Error('File content could not be read as string.'));
+			return;
+		}
+		onSuccess(content);
+	};
+	reader.onerror = (e) => {
+		onError(new Error(reader.error?.message || 'Failed to read file.'));
+	};
+	reader.readAsText(file);
+};
+
 export const FileUploadButton: React.FC<FileUploadButtonProps> = ({ onFileUpload }) => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -25,14 +45,10 @@ export const FileUploadButton: React.FC<FileUploadButtonProps> = ({ onFileUpload
 			return;
 		}
 
-		const reader = new FileReader();
-		reader.onload = (e) => {
-			const content = e.target?.result;
-			if (typeof content === 'string') {
-				onFileUpload(content);
-			}
-		};
-		reader.readAsText(file);
+		readFileAsText(file, onFileUpload, (error) => {
+			alert('Failed to load file: ' + error.message);
+			console.error('Failed to load:', error);
+		});
 
 		// Reset the value of the input element to ensure onChange fires again if the same file is selected
 		event.target.value = '';

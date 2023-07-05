@@ -6,3 +6,5 @@ const StorageKey = {
 } as const satisfies { [key in (typeof storageKey)[number]]: key };
 
 export { StorageKey };
+
+export type StorageKey = keyof typeof StorageKey;

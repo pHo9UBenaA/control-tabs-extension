@@ -1,14 +1,15 @@
 import {
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogContent,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogOverlay,
-    Button,
+	AlertDialog,
+	AlertDialogBody,
+	AlertDialogContent,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogOverlay,
+	Button,
 } from '@chakra-ui/react';
 import React from 'react';
-import { DialogProperty } from '../options';
+// TODO alias
+import { DialogProperty } from '../../options';
 
 type ClearConfirmationDialogProps = {
 	isOpen: boolean;
@@ -23,15 +24,9 @@ export const ClearConfirmationDialog: React.FC<ClearConfirmationDialogProps> = (
 	dialogProperty,
 	cancelRef,
 }) => {
-	const handleClearAndClose = async () => {
-		try {
-			if (dialogProperty.handleClear) {
-				await dialogProperty.handleClear();
-			}
-			onClose();
-		} catch (error) {
-			console.error('Failed to clear:', error);
-		}
+	const handleClearAndClose = () => {
+		dialogProperty.handleClear();
+		onClose();
 	};
 
 	return (

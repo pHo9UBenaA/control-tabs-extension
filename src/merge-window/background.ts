@@ -1,10 +1,10 @@
-import { contextMenusIds } from './constants/context-menus';
+import { ContextMenuIds } from './constants/context-menu';
 import { handleMergeWindowEvent, handleMergeSecretWindowEvent } from './handles/merge-window';
 
 const handleMapper = {
-	[contextMenusIds.mergeWindow]: handleMergeWindowEvent,
-	[contextMenusIds.mergeSecretWindow]: handleMergeSecretWindowEvent,
-} as const satisfies { [key in keyof typeof contextMenusIds]: () => void };
+	[ContextMenuIds.mergeWindow]: handleMergeWindowEvent,
+	[ContextMenuIds.mergeSecretWindow]: handleMergeSecretWindowEvent,
+} as const satisfies { [key in ContextMenuIds]: () => void };
 
 const removeAllContextMenus = () => {
 	chrome.contextMenus.removeAll();
@@ -20,13 +20,13 @@ const createContextMenu = (id: string, message: string) => {
 
 const initContextMenus = () => {
 	removeAllContextMenus();
-	createContextMenu(contextMenusIds.mergeWindow, 'mergeWindowTitle');
-	createContextMenu(contextMenusIds.mergeSecretWindow, 'mergeIncognitoWindowTitle');
+	createContextMenu(ContextMenuIds.mergeWindow, 'mergeWindowTitle');
+	createContextMenu(ContextMenuIds.mergeSecretWindow, 'mergeIncognitoWindowTitle');
 };
 
 const updateMergeSecretWindowContextMenu = async () => {
 	const isAllowedIncognitoAccess = await chrome.extension.isAllowedIncognitoAccess();
-	chrome.contextMenus.update(contextMenusIds.mergeSecretWindow, {
+	chrome.contextMenus.update(ContextMenuIds.mergeSecretWindow, {
 		enabled: isAllowedIncognitoAccess,
 	});
 };
@@ -39,7 +39,7 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
 	const menuItemId = info.menuItemId.toString();
 	if (menuItemId in handleMapper) {
-		handleMapper[menuItemId]();
+		handleMapper[menuItemId as ContextMenuIds]();
 	}
 });
 
