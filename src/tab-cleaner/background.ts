@@ -43,3 +43,9 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.action.onClicked.addListener((tab) => {
 	chrome.runtime.openOptionsPage();
 });
+
+chrome.commands.onCommand.addListener((command) => {
+	if (command in handleMapper) {
+		handleMapper[command as ContextMenuIds]();
+	}
+});

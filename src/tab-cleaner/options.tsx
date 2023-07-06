@@ -5,21 +5,22 @@ import {
 	Divider,
 	Flex,
 	Heading,
+	Spinner,
 	Stack,
 	VStack,
-	extendTheme,
 	useDisclosure,
 } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { StorageKey } from './constants/storage';
-import { ClearHistory, Domain } from './models/storage';
+import { ClearHistory, Domain, RemoveNewTab } from './models/storage';
+import { handleClearTabEvent } from './handles/clear-tab';
 import { ClearConfirmationDialog } from './options/components/ClearConfirmationDialog';
 import { FileUploadButton } from './options/components/FileUploadButton';
 import { DomainInput } from './options/components/DomainInput';
 import { DomainList } from './options/components/DomainList';
 import { ClearHistoryList } from './options/components/ClearHistoryList';
-import { handleClearTabEvent } from './handles/clear-tab';
+import { RemoveNewTabToggle } from './options/components/RemoveNewTabsToggle';
 
 export type DialogProperty = {
 	title: string;
@@ -27,20 +28,52 @@ export type DialogProperty = {
 	handleClear: () => void;
 };
 
+const initDialogProperty: DialogProperty = {
+	title: '',
+	confirmMessage: '',
+	handleClear: () => {},
+};
+
+const useRemoveNewTabToggleChange = (): [
+	RemoveNewTab,
+	React.Dispatch<React.SetStateAction<RemoveNewTab>>
+] => {
+	const [isChecked, setIsChecked] = useState<RemoveNewTab>(false);
+
+	const getStorageValue = (key: string): Promise<boolean> => {
+		return new Promise((resolve) => {
+			chrome.storage.local.get(key, (result) => {
+				resolve(result[key] || false);
+			});
+		});
+	};
+
+	useEffect(() => {
+		(async () => {
+			const storageValue = await getStorageValue(StorageKey.removeNewTab);
+			setIsChecked(storageValue);
+		})();
+	}, []);
+
+	return [isChecked, setIsChecked];
+};
+
 const useStorageChange = <T extends (Domain | ClearHistory)[]>(
 	key: string
 ): [T | undefined, React.Dispatch<React.SetStateAction<T | undefined>>] => {
 	const [value, setValue] = useState<T>();
-	useEffect(() => {
-		chrome.storage.local.get(key, (data) => {
-			setValue(data[key] || []);
-		});
 
-		chrome.storage.local.onChanged.addListener((changes) => {
-			if (changes[key]) {
-				setValue(changes[key].newValue || []);
-			}
-		});
+	const getCallback = (data: { [key: string]: T }) => {
+		setValue(data[key] || []);
+	};
+	const onChangeCallback = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+		if (changes[key]) {
+			setValue(changes[key].newValue || []);
+		}
+	};
+	useEffect(() => {
+		chrome.storage.local.get(key, (data) => getCallback(data));
+		chrome.storage.local.onChanged.addListener((changes) => onChangeCallback(changes));
 	}, [key]);
 
 	return [value, setValue];
@@ -75,17 +108,20 @@ const domainRegister = async (
 };
 
 const Options = () => {
+	const cancelRef = useRef(null);
+	const [dialogProperty, setDialogProperty] = useState<DialogProperty>(initDialogProperty);
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	const [isChecked, setIsChecked] = useRemoveNewTabToggleChange();
 	const [domains, setDomains] = useStorageChange<Domain[]>(StorageKey.domains);
 	const [clearHistories, setClearHistories] = useStorageChange<ClearHistory[]>(
 		StorageKey.clearHistories
 	);
-	const { isOpen, onOpen, onClose } = useDisclosure();
-	const [dialogProperty, setDialogProperty] = useState<DialogProperty>({
-		title: '',
-		confirmMessage: '',
-		handleClear: () => {},
-	});
-	const cancelRef = useRef(null);
+
+	const handleClickRemoveNewTabToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const value = event.target.checked;
+		setIsChecked(value);
+		chrome.storage.local.set({ [StorageKey.removeNewTab]: value });
+	};
 
 	const handleDomainSubmit = (urlHostname: string) => {
 		domainRegister(urlHostname, setDomains);
@@ -95,7 +131,8 @@ const Options = () => {
 		const lines = content.split('\n').filter((line) => line.trim() !== '');
 		for (let line of lines) {
 			try {
-				const url = new URL(line);
+				const lineAddSchema = line.includes('://') ? line : `http://${line}`;
+				const url = new URL(lineAddSchema);
 				await domainRegister(url.hostname, setDomains);
 			} catch {
 				console.error('Invalid URL:', line);
@@ -136,9 +173,18 @@ const Options = () => {
 				cancelRef={cancelRef}
 			/>
 			<Stack spacing={5} w='100%'>
-				<Heading as='h1' size='lg'>
-					Tab Cleaner
-				</Heading>
+				<Flex w='100%' justify='space-between' alignItems='center'>
+					<Heading as='h1' size='lg'>
+						Tab Cleaner
+					</Heading>
+					<Stack direction='row' spacing={2} align='center'>
+						<RemoveNewTabToggle
+							isChecked={isChecked}
+							onClickToggle={handleClickRemoveNewTabToggle}
+						/>
+						<Button onClick={handleClearTabEvent}>Execute</Button>
+					</Stack>
+				</Flex>
 
 				<Divider />
 
@@ -172,21 +218,13 @@ const Options = () => {
 	);
 };
 
-const App = () => {
-	const theme = {
-		config: {
-			initialColorMode: 'dark',
-			useSystemColorMode: false,
-		},
-	};
-	return (
-		<ChakraProvider theme={extendTheme(theme)}>
-			<Box maxWidth='800px' m='auto' p={5}>
-				<Options />
-			</Box>
-		</ChakraProvider>
-	);
-};
+const App = () => (
+	<ChakraProvider>
+		<Box maxWidth='800px' m='auto' mt={3} p={5}>
+			<Options />
+		</Box>
+	</ChakraProvider>
+);
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

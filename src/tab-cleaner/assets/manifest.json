@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "__MSG_extensionName__",
 	"short_name": "__MSG_extensionShortName__",
-	"version": "0.0.3",
+	"version": "0.1.0",
 	"description": "__MSG_extensionDescription__",
 	"default_locale": "en",
 	"author": "pHo9UBenaA",
@@ -13,5 +13,14 @@
 		"default_title": "Open Options"
 	},
 	"options_page": "options.html",
+	"commands": {
+		"clearTab": {
+			"suggested_key": {
+				"default": "Ctrl+E",
+				"mac": "Command+E"
+			},
+			"description": "Triggering Clear Tab"
+		}
+	},
 	"permissions": ["storage", "contextMenus", "tabs"]
 }
