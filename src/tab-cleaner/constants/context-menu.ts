@@ -1,8 +1,9 @@
-const ContextMenuIdsKey = ['clearTab'] as const;
+const ContextMenuIdsKey = ['clearTab', 'registerDomain'] as const;
 
 const ContextMenuIds = {
 	// TODO
 	[ContextMenuIdsKey[0]]: ContextMenuIdsKey[0],
+	[ContextMenuIdsKey[1]]: ContextMenuIdsKey[1],
 } as const satisfies { [key in (typeof ContextMenuIdsKey)[number]]: key };
 
 export { ContextMenuIds };

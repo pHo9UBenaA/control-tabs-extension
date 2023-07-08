@@ -83,27 +83,31 @@ const domainRegister = async (
 	urlHostname: string,
 	setDomains: React.Dispatch<React.SetStateAction<string[] | undefined>>
 ) => {
-	return new Promise((resolve) => {
-		const urlHostnameWithoutScheme = urlHostname
-			.replace(/(^\w+:|^)\/\//, '')
-			.replace(/\/$/, '');
+	const urlHostnameWithoutScheme = urlHostname.replace(/(^\w+:|^)\/\//, '').replace(/\/$/, '');
 
-		if (!urlHostnameWithoutScheme) {
-			console.error('urlHostnameWithoutScheme is undefined');
-			return;
-		}
+	if (!urlHostnameWithoutScheme) {
+		console.error('urlHostnameWithoutScheme is undefined');
+		return;
+	}
 
+	const prevDomains: Domain[] = await new Promise((resolve) => {
 		chrome.storage.local.get(StorageKey.domains, (data) => {
-			const prev: Domain[] = data[StorageKey.domains] || [];
-			const uniqueDomains: Domain[] = [...new Set([...prev, urlHostnameWithoutScheme])];
-			setDomains(uniqueDomains);
-			chrome.storage.local.set(
-				{
-					[StorageKey.domains]: uniqueDomains,
-				},
-				() => resolve(null)
-			);
+			resolve(data[StorageKey.domains] || []);
 		});
+	});
+
+	const uniqueDomains: Domain[] = [...new Set([...prevDomains, urlHostnameWithoutScheme])];
+
+	return new Promise((resolve) => {
+		chrome.storage.local.set(
+			{
+				[StorageKey.domains]: uniqueDomains,
+			},
+			() => {
+				setDomains(uniqueDomains);
+				resolve(null);
+			}
+		);
 	});
 };
 
