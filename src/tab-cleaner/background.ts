@@ -1,8 +1,10 @@
 import { ContextMenuIds } from './constants/context-menu';
 import { handleClearTabEvent } from './handles/clear-tab';
+import { handleRegisterDomainEvent } from './handles/register-domain';
 
 const handleMapper = {
 	[ContextMenuIds.clearTab]: handleClearTabEvent,
+	[ContextMenuIds.registerDomain]: handleRegisterDomainEvent,
 } as const satisfies { [key in ContextMenuIds]: () => void };
 
 const initContextMenus = () => {
@@ -20,6 +22,7 @@ const initContextMenus = () => {
 
 	const createContextMenus = () => {
 		createContextMenu(ContextMenuIds.clearTab, 'clearTabTitle');
+		createContextMenu(ContextMenuIds.registerDomain, 'registerCurrentPageDomain');
 	};
 
 	removeAllContextMenus();

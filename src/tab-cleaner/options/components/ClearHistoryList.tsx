@@ -12,7 +12,7 @@ export const ClearHistoryList: React.FC<ClearHistoryProps> = ({ clearHistories }
 		{clearHistories && clearHistories.length ? (
 			clearHistories.map((clearHistory, i) => (
 				<ListItem key={clearHistory.id}>
-					<Link href={clearHistory.url} isExternal>
+					<Link href={clearHistory.url} textDecoration='underline' isExternal>
 						<Text isTruncated>{clearHistory.title}</Text>
 					</Link>
 				</ListItem>

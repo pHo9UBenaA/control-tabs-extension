@@ -6,11 +6,17 @@
 	"description": "__MSG_extensionDescription__",
 	"default_locale": "en",
 	"author": "pHo9UBenaA",
+	"action": {
+		"default_title": "Open Options",
+		"default_icon": "icon.png"
+	},
+	"icons": {
+		"16": "icon.png",
+		"48": "icon.png",
+		"128": "icon.png"
+	},
 	"background": {
 		"service_worker": "background.js"
-	},
-	"action": {
-		"default_title": "Open Options"
 	},
 	"options_page": "options.html",
 	"commands": {
@@ -20,6 +26,13 @@
 				"mac": "Command+E"
 			},
 			"description": "Triggering Clear Tab"
+		},
+		"registerDomain": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+E",
+				"mac": "Command+Shift+E"
+			},
+			"description": "Triggering Register Domain"
 		}
 	},
 	"permissions": ["storage", "contextMenus", "tabs"]
