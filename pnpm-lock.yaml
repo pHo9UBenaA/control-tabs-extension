@@ -9,8 +9,8 @@ devDependencies:
     specifier: ^2.7.1
     version: 2.7.1(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.14)(framer-motion@10.12.18)(react-dom@18.2.0)(react@18.2.0)
   '@types/chrome':
-    specifier: ^0.0.239
-    version: 0.0.239
+    specifier: ^0.0.240
+    version: 0.0.240
   '@types/react':
     specifier: ^18.2.14
     version: 18.2.14
@@ -1619,8 +1619,8 @@ packages:
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
     dev: true
 
-  /@types/chrome@0.0.239:
-    resolution: {integrity: sha512-s/v0pAdpjqfYdwYPDIRiIQDyXfaLi5u+OyHW2NexhqoTm/KZVqKqS1isK11DVu/iUrAUULtbfKtzLKt3+kHgXQ==}
+  /@types/chrome@0.0.240:
+    resolution: {integrity: sha512-aiA2V8+WeJeOqtghX9KLqPT2GfaR2ksmgEZm84TsHAxTwl+tkEKax5oLO2hLptNRc5xQ2tbIRiUc5olIe0TnoQ==}
     dependencies:
       '@types/filesystem': 0.0.32
       '@types/har-format': 1.2.11
