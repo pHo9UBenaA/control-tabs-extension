@@ -1,10 +1,9 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 devDependencies:
+  '@chakra-ui/icons':
+    specifier: ^2.1.0
+    version: 2.1.0(@chakra-ui/system@2.5.8)(react@18.2.0)
   '@chakra-ui/react':
     specifier: ^2.7.1
     version: 2.7.1(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.15)(framer-motion@10.12.18)(react-dom@18.2.0)(react@18.2.0)
@@ -17,6 +16,9 @@ devDependencies:
   '@types/react-dom':
     specifier: ^18.2.7
     version: 18.2.7
+  '@types/uuid':
+    specifier: ^9.0.2
+    version: 9.0.2
   dotenv:
     specifier: ^16.3.1
     version: 16.3.1
@@ -47,6 +49,9 @@ devDependencies:
   typescript:
     specifier: ^5.1.6
     version: 5.1.6
+  uuid:
+    specifier: ^9.0.0
+    version: 9.0.0
 
 packages:
 
@@ -364,6 +369,28 @@ packages:
       react: '>=18'
     dependencies:
       '@chakra-ui/shared-utils': 2.0.5
+      '@chakra-ui/system': 2.5.8(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(react@18.2.0)
+      react: 18.2.0
+    dev: true
+
+  /@chakra-ui/icon@3.1.0(@chakra-ui/system@2.5.8)(react@18.2.0):
+    resolution: {integrity: sha512-t6v0lGCXRbwUJycN8A/nDTuLktMP+LRjKbYJnd2oL6Pm2vOl99XwEQ5cAEyEa4XoseYNEgXiLR+2TfvgfNFvcw==}
+    peerDependencies:
+      '@chakra-ui/system': '>=2.0.0'
+      react: '>=18'
+    dependencies:
+      '@chakra-ui/shared-utils': 2.0.5
+      '@chakra-ui/system': 2.5.8(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(react@18.2.0)
+      react: 18.2.0
+    dev: true
+
+  /@chakra-ui/icons@2.1.0(@chakra-ui/system@2.5.8)(react@18.2.0):
+    resolution: {integrity: sha512-pGFxFfQ/P5VnSRnTzK8zGAJxoxkxpHo/Br9ohRZdOpuhnIHSW7va0P53UoycEO5/vNJ/7BN0oDY0k9qurChcew==}
+    peerDependencies:
+      '@chakra-ui/system': '>=2.0.0'
+      react: '>=18'
+    dependencies:
+      '@chakra-ui/icon': 3.1.0(@chakra-ui/system@2.5.8)(react@18.2.0)
       '@chakra-ui/system': 2.5.8(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(react@18.2.0)
       react: 18.2.0
     dev: true
@@ -1676,6 +1703,10 @@ packages:
     resolution: {integrity: sha512-5cJ8CB4yAx7BH1oMvdU0Jh9lrEXyPkar6F9G/ERswkCuvP4KQZfZkSjcMbAICCpQTN4OuZn8tz0HiKv9TGZgrQ==}
     dev: true
 
+  /@types/uuid@9.0.2:
+    resolution: {integrity: sha512-kNnC1GFBLuhImSnV7w4njQkUiJi0ZXUycu1rUaouPqiKlXkh77JKgdRnTAp1x5eBwcIwbtI+3otwzuIDEuDoxQ==}
+    dev: true
+
   /@zag-js/element-size@0.3.2:
     resolution: {integrity: sha512-bVvvigUGvAuj7PCkE5AbzvTJDTw5f3bg9nQdv+ErhVN8SfPPppLJEmmWdxqsRzrHXgx8ypJt/+Ty0kjtISVDsQ==}
     dev: true
@@ -2819,6 +2850,11 @@ packages:
       tslib: 2.6.0
     dev: true
 
+  /uuid@9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
+    hasBin: true
+    dev: true
+
   /which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
     engines: {node: '>= 8'}
@@ -2858,3 +2894,7 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false

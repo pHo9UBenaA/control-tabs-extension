@@ -27,7 +27,7 @@ const removeNewTabs = (removeNewTab: RemoveNewTab) => {
 	chrome.tabs.query({ url: 'chrome://newtab/' }, removeTabs);
 };
 
-const removeTabsByDomain = (domains: string[]) => {
+const removeTabsByDomain = (domains: Domain[]) => {
 	const getClearHistories = (tabs: chrome.tabs.Tab[]): ClearHistory[] => {
 		return tabs
 			.slice()
@@ -53,7 +53,12 @@ const removeTabsByDomain = (domains: string[]) => {
 		};
 
 	const tabsQuery: chrome.tabs.QueryInfo = {
-		url: domains.map((domain) => `*://${domain}/*`),
+		url: domains.map((domain) => {
+			if (typeof domain === 'string') {
+				return `*://${domain}/*`;
+			}
+			return `*://${domain.name}/*`;
+		}),
 	};
 
 	chrome.tabs.query(tabsQuery, (tabs) => {
