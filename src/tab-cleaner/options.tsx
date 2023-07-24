@@ -5,38 +5,33 @@ import {
 	Divider,
 	Flex,
 	Heading,
-	Spinner,
 	Stack,
 	VStack,
 	useDisclosure,
 } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 import * as ReactDOM from 'react-dom/client';
+import { v4 as uuid_v4 } from 'uuid';
 import { StorageKey } from './constants/storage';
 import { ClearHistory, Domain, RemoveNewTab } from './models/storage';
 import { handleClearTabEvent } from './handles/clear-tab';
-import { ClearConfirmationDialog } from './options/components/ClearConfirmationDialog';
-import { FileUploadButton } from './options/components/FileUploadButton';
-import { DomainInput } from './options/components/DomainInput';
-import { DomainList } from './options/components/DomainList';
-import { ClearHistoryList } from './options/components/ClearHistoryList';
-import { RemoveNewTabToggle } from './options/components/RemoveNewTabsToggle';
-
-export type DialogProperty = {
-	title: string;
-	confirmMessage: string;
-	handleClear: () => void;
-};
+import { ConfirmDialog, DialogProperty } from './options/components/ConfirmDialog';
+import { FileUploadButton } from './options/features/FileUploadButton';
+import { DomainInput } from './options/features/DomainInput';
+import { DomainList } from './options/features/DomainList';
+import { ClearHistoryList } from './options/features/ClearHistoryList';
+import { RemoveNewTabToggle } from './options/features/RemoveNewTabsToggle';
 
 const initDialogProperty: DialogProperty = {
 	title: '',
 	confirmMessage: '',
-	handleClear: () => {},
+	actionMessage: 'Clear',
+	handleAction: () => {},
 };
 
 const useRemoveNewTabToggleChange = (): [
 	RemoveNewTab,
-	React.Dispatch<React.SetStateAction<RemoveNewTab>>
+	React.Dispatch<React.SetStateAction<RemoveNewTab>>,
 ] => {
 	const [isChecked, setIsChecked] = useState<RemoveNewTab>(false);
 
@@ -81,7 +76,7 @@ const useStorageChange = <T extends (Domain | ClearHistory)[]>(
 
 const domainRegister = async (
 	urlHostname: string,
-	setDomains: React.Dispatch<React.SetStateAction<string[] | undefined>>
+	setDomains: React.Dispatch<React.SetStateAction<Domain[] | undefined>>
 ) => {
 	const urlHostnameWithoutScheme = urlHostname.replace(/(^\w+:|^)\/\//, '').replace(/\/$/, '');
 
@@ -96,7 +91,26 @@ const domainRegister = async (
 		});
 	});
 
-	const uniqueDomains: Domain[] = [...new Set([...prevDomains, urlHostnameWithoutScheme])];
+	const isDuplicate = prevDomains.some((prevDomain) => {
+		if (typeof prevDomain === 'string') {
+			return prevDomain === urlHostnameWithoutScheme;
+		}
+		return prevDomain.name === urlHostnameWithoutScheme;
+	});
+	if (isDuplicate) {
+		console.info('Duplicate domain');
+		return;
+	}
+
+	const uniqueDomains: Domain[] = [
+		...new Set([
+			...prevDomains,
+			{
+				uuid: uuid_v4(),
+				name: urlHostnameWithoutScheme,
+			},
+		]),
+	];
 
 	return new Promise((resolve) => {
 		chrome.storage.local.set(
@@ -148,7 +162,8 @@ const Options = () => {
 		setDialogProperty({
 			title: 'Clear Registered Domains',
 			confirmMessage: 'Are you sure you want to clear all registered domains?',
-			handleClear: () => {
+			actionMessage: 'Clear',
+			handleAction: () => {
 				chrome.storage.local.remove(StorageKey.domains);
 				setDomains([]);
 			},
@@ -156,11 +171,24 @@ const Options = () => {
 		onOpen();
 	};
 
+	const handleRemoveDomain = (uuid: string) => {
+		chrome.storage.local.get(StorageKey.domains, (data) => {
+			const prevDomains: Domain[] = data[StorageKey.domains] || [];
+			const newDomains = prevDomains.filter(
+				(domain) => typeof domain === 'string' || domain.uuid !== uuid
+			);
+			chrome.storage.local.set({ [StorageKey.domains]: newDomains }, () => {
+				setDomains(newDomains);
+			});
+		});
+	};
+
 	const handleClearHistories = () => {
 		setDialogProperty({
 			title: 'Clear Cleaned Pages',
 			confirmMessage: 'Are you sure you want to clear all cleaned pages?',
-			handleClear: () => {
+			actionMessage: 'Clear',
+			handleAction: () => {
 				chrome.storage.local.remove(StorageKey.clearHistories);
 				setClearHistories([]);
 			},
@@ -170,7 +198,7 @@ const Options = () => {
 
 	return (
 		<VStack spacing={5} align='start'>
-			<ClearConfirmationDialog
+			<ConfirmDialog
 				isOpen={isOpen}
 				onClose={onClose}
 				dialogProperty={dialogProperty}
@@ -204,7 +232,7 @@ const Options = () => {
 					</Stack>
 				</Flex>
 				<DomainInput onDomainSubmit={handleDomainSubmit} />
-				<DomainList domains={domains} />
+				<DomainList domains={domains} handleRemoveDomain={handleRemoveDomain} />
 
 				<Divider />
 

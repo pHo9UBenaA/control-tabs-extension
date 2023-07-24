@@ -9,12 +9,12 @@
 		"lint:fix": "pnpm run _lint --fix; pnpm run _prettier --write \".\""
 	},
 	"devDependencies": {
+		"@chakra-ui/icons": "^2.1.0",
 		"@chakra-ui/react": "^2.7.1",
-		"@types/chrome": "^0.0.241",
-		"@types/react": "^18.2.15",
 		"@types/chrome": "^0.0.240",
 		"@types/react": "^18.2.15",
 		"@types/react-dom": "^18.2.7",
+		"@types/uuid": "^9.0.2",
 		"dotenv": "^16.3.1",
 		"esbuild": "^0.18.16",
 		"esbuild-copy-static-files": "^0.1.0",
@@ -24,6 +24,7 @@
 		"prettier": "^3.0.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"typescript": "^5.1.6"
+		"typescript": "^5.1.6",
+		"uuid": "^9.0.0"
 	}
 }

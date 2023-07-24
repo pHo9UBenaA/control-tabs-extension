@@ -8,24 +8,29 @@ import {
 	Button,
 } from '@chakra-ui/react';
 import React from 'react';
-// TODO alias
-import { DialogProperty } from '../../options';
 
-type ClearConfirmationDialogProps = {
+export type DialogProperty = {
+	title: string;
+	confirmMessage: string;
+	actionMessage: string;
+	handleAction: () => void;
+};
+
+type ConfirmDialogProps = {
 	isOpen: boolean;
 	onClose: () => void;
 	dialogProperty: DialogProperty;
 	cancelRef: React.RefObject<HTMLButtonElement>;
 };
 
-export const ClearConfirmationDialog: React.FC<ClearConfirmationDialogProps> = ({
+export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 	isOpen,
 	onClose,
 	dialogProperty,
 	cancelRef,
 }) => {
-	const handleClearAndClose = () => {
-		dialogProperty.handleClear();
+	const handleActionAndClose = () => {
+		dialogProperty.handleAction();
 		onClose();
 	};
 
@@ -43,8 +48,8 @@ export const ClearConfirmationDialog: React.FC<ClearConfirmationDialogProps> = (
 						<Button ref={cancelRef} onClick={onClose}>
 							Cancel
 						</Button>
-						<Button colorScheme='red' onClick={handleClearAndClose} ml={3}>
-							Clear
+						<Button colorScheme='red' onClick={handleActionAndClose} ml={3}>
+							{dialogProperty.actionMessage}
 						</Button>
 					</AlertDialogFooter>
 				</AlertDialogContent>
