@@ -13,7 +13,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { v4 as uuid_v4 } from 'uuid';
 import { StorageKey } from './constants/storage';
-import { ClearHistory, Domain, RemoveNewTab } from './models/storage';
+import { ClearHistory, Domain, Setting } from './models/storage';
 import { handleClearTabEvent } from './handles/clear-tab';
 import { ConfirmDialog, DialogProperty } from './options/components/ConfirmDialog';
 import { FileUploadButton } from './options/features/FileUploadButton';
@@ -29,49 +29,12 @@ const initDialogProperty: DialogProperty = {
 	handleAction: () => {},
 };
 
-const useRemoveNewTabToggleChange = (): [
-	RemoveNewTab,
-	React.Dispatch<React.SetStateAction<RemoveNewTab>>,
-] => {
-	const [isChecked, setIsChecked] = useState<RemoveNewTab>(false);
-
-	const getStorageValue = (key: string): Promise<boolean> => {
-		return new Promise((resolve) => {
-			chrome.storage.local.get(key, (result) => {
-				resolve(result[key] || false);
-			});
+const getStorageSettingValue = (key: string): Promise<Setting> => {
+	return new Promise((resolve) => {
+		chrome.storage.local.get(key, (result) => {
+			resolve(result[key] || {});
 		});
-	};
-
-	useEffect(() => {
-		(async () => {
-			const storageValue = await getStorageValue(StorageKey.removeNewTab);
-			setIsChecked(storageValue);
-		})();
-	}, []);
-
-	return [isChecked, setIsChecked];
-};
-
-const useStorageChange = <T extends (Domain | ClearHistory)[]>(
-	key: string
-): [T | undefined, React.Dispatch<React.SetStateAction<T | undefined>>] => {
-	const [value, setValue] = useState<T>();
-
-	const getCallback = (data: { [key: string]: T }) => {
-		setValue(data[key] || []);
-	};
-	const onChangeCallback = (changes: { [key: string]: chrome.storage.StorageChange }) => {
-		if (changes[key]) {
-			setValue(changes[key].newValue || []);
-		}
-	};
-	useEffect(() => {
-		chrome.storage.local.get(key, (data) => getCallback(data));
-		chrome.storage.local.onChanged.addListener((changes) => onChangeCallback(changes));
-	}, [key]);
-
-	return [value, setValue];
+	});
 };
 
 const domainRegister = async (
@@ -125,6 +88,44 @@ const domainRegister = async (
 	});
 };
 
+const useRemoveNewTabToggleChange = (): [
+	Setting['removeNewTab'],
+	React.Dispatch<React.SetStateAction<Setting['removeNewTab']>>,
+] => {
+	const [isChecked, setIsChecked] = useState<Setting['removeNewTab']>(false);
+
+	useEffect(() => {
+		(async () => {
+			const setting: Setting = await getStorageSettingValue(StorageKey.setting);
+			setIsChecked(setting?.removeNewTab || false);
+		})();
+	}, []);
+
+	return [isChecked, setIsChecked];
+};
+
+const useStorageChange = <T extends (Domain | ClearHistory)[]>(
+	key: string
+): [T | undefined, React.Dispatch<React.SetStateAction<T | undefined>>] => {
+	const [value, setValue] = useState<T>();
+
+	const getCallback = (data: { [key: string]: T }) => {
+		setValue(data[key] || []);
+	};
+	const onChangeCallback = (changes: { [key: string]: chrome.storage.StorageChange }) => {
+		if (changes[key]) {
+			setValue(changes[key].newValue || []);
+		}
+	};
+	useEffect(() => {
+		chrome.storage.local.get(key, (data) => getCallback(data));
+		chrome.storage.local.onChanged.addListener((changes) => onChangeCallback(changes));
+	}, [key]);
+
+	return [value, setValue];
+};
+
+
 const Options = () => {
 	const cancelRef = useRef(null);
 	const [dialogProperty, setDialogProperty] = useState<DialogProperty>(initDialogProperty);
@@ -135,10 +136,16 @@ const Options = () => {
 		StorageKey.clearHistories
 	);
 
-	const handleClickRemoveNewTabToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleClickRemoveNewTabToggle = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.checked;
 		setIsChecked(value);
-		chrome.storage.local.set({ [StorageKey.removeNewTab]: value });
+		const storageValue: Setting = await new Promise((resolve) => {
+			chrome.storage.local.get(StorageKey.setting, (result) => {
+				resolve(result[StorageKey.setting] || {});
+			});
+		});
+		const newStorageValue = { ...storageValue, removeNewTab: value };
+		chrome.storage.local.set({ [StorageKey.setting]: newStorageValue });
 	};
 
 	const handleDomainSubmit = (urlHostname: string) => {
@@ -224,11 +231,11 @@ const Options = () => {
 					<Heading as='h1' size='lg'>
 						Registered Domains
 					</Heading>
-					<Stack direction='row' spacing={2} align='end'>
+					<Stack direction='row' spacing={2} align='center'>
+						<FileUploadButton onFileUpload={handleFileUpload} />
 						<Button onClick={handleClearDomains} size='sm'>
 							Clear
 						</Button>
-						<FileUploadButton onFileUpload={handleFileUpload} />
 					</Stack>
 				</Flex>
 				<DomainInput onDomainSubmit={handleDomainSubmit} />
@@ -238,11 +245,13 @@ const Options = () => {
 
 				<Flex w='100%' justify='space-between' alignItems='center'>
 					<Heading as='h1' size='lg'>
-						Previously Cleaned Pages
+						Cleaned History
 					</Heading>
-					<Button onClick={handleClearHistories} size='sm'>
-						Clear
-					</Button>
+					<Stack direction='row' spacing={2} align={'center'}>
+						<Button onClick={handleClearHistories} size='sm'>
+							Clear
+						</Button>
+					</Stack>
 				</Flex>
 				<ClearHistoryList clearHistories={clearHistories} />
 			</Stack>

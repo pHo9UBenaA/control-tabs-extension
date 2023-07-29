@@ -1,7 +1,7 @@
 import { StorageKey } from '../constants/storage';
-import { ClearHistory, Domain, RemoveNewTab } from '../models/storage';
+import { ClearHistory, Domain, Setting } from '../models/storage';
 
-const removeNewTabs = (removeNewTab: RemoveNewTab) => {
+const removeNewTabs = (removeNewTab: Setting['removeNewTab']) => {
 	if (!removeNewTab) {
 		return;
 	}
@@ -27,7 +27,10 @@ const removeNewTabs = (removeNewTab: RemoveNewTab) => {
 	chrome.tabs.query({ url: 'chrome://newtab/' }, removeTabs);
 };
 
-const removeTabsByDomain = (domains: Domain[]) => {
+const removeTabsByDomain = (
+	domains: Domain[],
+	clearHistoriesLimit: Setting['clearHistoriesLimit']
+) => {
 	const getClearHistories = (tabs: chrome.tabs.Tab[]): ClearHistory[] => {
 		return tabs
 			.slice()
@@ -41,6 +44,13 @@ const removeTabsByDomain = (domains: Domain[]) => {
 				return { id, title, url };
 			})
 			.filter((x): x is ClearHistory => x !== undefined);
+	};
+
+	const getClearHistoriesLimit = (clearHistories: ClearHistory[]): ClearHistory[] => {
+		if (!clearHistoriesLimit) {
+			return clearHistories;
+		}
+		return clearHistories.slice(0, clearHistoriesLimit);
 	};
 
 	const updateClearHistoriesStorage =
@@ -64,23 +74,29 @@ const removeTabsByDomain = (domains: Domain[]) => {
 	chrome.tabs.query(tabsQuery, (tabs) => {
 		const clearHistories = getClearHistories(tabs);
 		chrome.tabs.remove(clearHistories.map((x) => x.id));
+		const clearHistoriesLimit = getClearHistoriesLimit(clearHistories);
 		chrome.storage.local.get(
 			StorageKey.clearHistories,
-			updateClearHistoriesStorage(clearHistories)
+			updateClearHistoriesStorage(clearHistoriesLimit)
 		);
 	});
 };
 
-const handleClearTabEvent = () => {
-	chrome.storage.local.get(StorageKey.removeNewTab, (data) => {
-		const removeNewTab: boolean = data[StorageKey.removeNewTab] || false;
-		removeNewTabs(removeNewTab);
+const handleClearTabEvent = async () => {
+	const setting = await new Promise<Setting>((resolve) => {
+		chrome.storage.local.get(StorageKey.setting, (data) => {
+			resolve(data[StorageKey.setting]);
+		});
 	});
+	const removeNewTab = setting?.removeNewTab || false;
+	removeNewTabs(removeNewTab);
 
-	chrome.storage.local.get(StorageKey.domains, (data) => {
-		const domains: Domain[] = data[StorageKey.domains] || [];
-		removeTabsByDomain(domains);
+	const domains = await new Promise<Domain[]>((resolve) => {
+		chrome.storage.local.get(StorageKey.domains, (data) => {
+			resolve(data[StorageKey.domains]);
+		});
 	});
+	removeTabsByDomain(domains, setting?.clearHistoriesLimit);
 };
 
 export { handleClearTabEvent };

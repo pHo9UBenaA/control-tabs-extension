@@ -1,4 +1,4 @@
-const storageKey = ['domains', 'clearHistories', 'removeNewTab'] as const;
+const storageKey = ['domains', 'clearHistories', 'setting'] as const;
 
 export const StorageKey = {
 	[storageKey[0]]: storageKey[0],

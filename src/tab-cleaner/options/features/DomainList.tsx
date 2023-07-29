@@ -1,8 +1,8 @@
 import { useDisclosure, IconButton, Box, VStack } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
 import React, { useRef } from 'react';
+import { ConfirmDialog, DialogProperty } from '../components/ConfirmDialog';
 import { Domain } from '../../models/storage';
-import { ConfirmDialog } from '../components/ConfirmDialog';
 
 type DomainItemProps = {
 	domain: Domain;
@@ -51,7 +51,7 @@ export const DomainList: React.FC<DomainListProps> = ({ domains, handleRemoveDom
 		onClose();
 	};
 
-	const dialogProperty = {
+	const dialogProperty: DialogProperty = {
 		title: 'Delete Domain',
 		confirmMessage: 'Are you sure you want to delete this domain?',
 		actionMessage: 'Delete',
