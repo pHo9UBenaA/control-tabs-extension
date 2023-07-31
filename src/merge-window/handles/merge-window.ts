@@ -54,4 +54,4 @@ const handleMergeSecretWindowEvent = () => {
 	});
 };
 
-export { handleMergeWindowEvent, handleMergeSecretWindowEvent };
+export { handleMergeSecretWindowEvent, handleMergeWindowEvent };

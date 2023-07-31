@@ -1,5 +1,5 @@
 import { ContextMenuIds } from './constants/context-menu';
-import { handleMergeWindowEvent, handleMergeSecretWindowEvent } from './handles/merge-window';
+import { handleMergeSecretWindowEvent, handleMergeWindowEvent } from './handles/merge-window';
 
 const handleMapper = {
 	[ContextMenuIds.mergeWindow]: handleMergeWindowEvent,
