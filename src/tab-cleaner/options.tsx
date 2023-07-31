@@ -13,14 +13,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { v4 as uuid_v4 } from 'uuid';
 import { StorageKey } from './constants/storage';
-import { ClearHistory, Domain, Setting } from './models/storage';
 import { handleClearTabEvent } from './handles/clear-tab';
+import { ClearHistory, Domain, Setting } from './models/storage';
 import { ConfirmDialog, DialogProperty } from './options/components/ConfirmDialog';
-import { FileUploadButton } from './options/features/FileUploadButton';
+import { ClearHistoryList } from './options/features/ClearHistoryList';
 import { DomainInput } from './options/features/DomainInput';
 import { DomainList } from './options/features/DomainList';
-import { ClearHistoryList } from './options/features/ClearHistoryList';
+import { FileUploadButton } from './options/features/FileUploadButton';
 import { RemoveNewTabToggle } from './options/features/RemoveNewTabsToggle';
+import { SelectCleanHistoryLimit } from './options/features/SelectCleanHistoryLimit';
 
 const initDialogProperty: DialogProperty = {
 	title: '',
@@ -125,6 +126,22 @@ const useStorageChange = <T extends (Domain | ClearHistory)[]>(
 	return [value, setValue];
 };
 
+const useClearHistoriesLimit = (): [
+	Setting['clearHistoriesLimit'],
+	React.Dispatch<React.SetStateAction<Setting['clearHistoriesLimit']>>,
+] => {
+	const [clearHistoriesLimit, setClearHistoriesLimit] =
+		useState<Setting['clearHistoriesLimit']>();
+
+	useEffect(() => {
+		(async () => {
+			const setting: Setting = await getStorageSettingValue(StorageKey.setting);
+			setClearHistoriesLimit(setting?.clearHistoriesLimit);
+		})();
+	}, []);
+
+	return [clearHistoriesLimit, setClearHistoriesLimit];
+};
 
 const Options = () => {
 	const cancelRef = useRef(null);
@@ -135,6 +152,7 @@ const Options = () => {
 	const [clearHistories, setClearHistories] = useStorageChange<ClearHistory[]>(
 		StorageKey.clearHistories
 	);
+	const [clearHistoriesLimit, setClearHistoriesLimit] = useClearHistoriesLimit();
 
 	const handleClickRemoveNewTabToggle = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.checked;
@@ -167,8 +185,8 @@ const Options = () => {
 
 	const handleClearDomains = () => {
 		setDialogProperty({
-			title: 'Clear Registered Domains',
-			confirmMessage: 'Are you sure you want to clear all registered domains?',
+			title: 'Clear Target Domains',
+			confirmMessage: 'Are you sure you want to clear all target domains?',
 			actionMessage: 'Clear',
 			handleAction: () => {
 				chrome.storage.local.remove(StorageKey.domains);
@@ -192,8 +210,8 @@ const Options = () => {
 
 	const handleClearHistories = () => {
 		setDialogProperty({
-			title: 'Clear Cleaned Pages',
-			confirmMessage: 'Are you sure you want to clear all cleaned pages?',
+			title: 'Clear Cleaned History',
+			confirmMessage: 'Are you sure you want to clear all cleaned history?',
 			actionMessage: 'Clear',
 			handleAction: () => {
 				chrome.storage.local.remove(StorageKey.clearHistories);
@@ -201,6 +219,14 @@ const Options = () => {
 			},
 		});
 		onOpen();
+	};
+
+	const handleClearHistoriesLimitChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
+		const newValue = isNaN(Number(event.target.value)) ? undefined : Number(event.target.value);
+		setClearHistoriesLimit(newValue);
+		const storageValue: Setting = await getStorageSettingValue(StorageKey.setting);
+		const newStorageValue = { ...storageValue, clearHistoriesLimit: newValue };
+		await chrome.storage.local.set({ [StorageKey.setting]: newStorageValue });
 	};
 
 	return (
@@ -229,11 +255,12 @@ const Options = () => {
 
 				<Flex w='100%' justify='space-between' alignItems='center'>
 					<Heading as='h1' size='lg'>
-						Registered Domains
+						Target Domains
 					</Heading>
 					<Stack direction='row' spacing={2} align='center'>
 						<FileUploadButton onFileUpload={handleFileUpload} />
-						<Button onClick={handleClearDomains} size='sm'>
+						{/* TODO: minWidth */}
+						<Button onClick={handleClearDomains} size='sm' minWidth='60px'>
 							Clear
 						</Button>
 					</Stack>
@@ -247,8 +274,13 @@ const Options = () => {
 					<Heading as='h1' size='lg'>
 						Cleaned History
 					</Heading>
-					<Stack direction='row' spacing={2} align={'center'}>
-						<Button onClick={handleClearHistories} size='sm'>
+					<Stack direction='row' spacing={2} align='center'>
+						<SelectCleanHistoryLimit
+							clearHistoriesLimit={clearHistoriesLimit}
+							onSelectChange={handleClearHistoriesLimitChange}
+						/>
+						{/* TODO: minWidth */}
+						<Button onClick={handleClearHistories} size='sm' minWidth='60px'>
 							Clear
 						</Button>
 					</Stack>

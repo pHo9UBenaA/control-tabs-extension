@@ -56,7 +56,11 @@ const removeTabsByDomain = (
 	const updateClearHistoriesStorage =
 		(clearHistories: ClearHistory[]) => (data: { [s: string]: ClearHistory[] }) => {
 			const prevClearHistories: ClearHistory[] = data[StorageKey.clearHistories] || [];
-			const updateClearHistories: ClearHistory[] = [...clearHistories, ...prevClearHistories];
+			const updateClearHistories: ClearHistory[] = getClearHistoriesLimit([
+				...clearHistories,
+				...prevClearHistories,
+			]);
+			console.log(updateClearHistories);
 			chrome.storage.local.set({
 				[StorageKey.clearHistories]: updateClearHistories,
 			});
@@ -74,10 +78,9 @@ const removeTabsByDomain = (
 	chrome.tabs.query(tabsQuery, (tabs) => {
 		const clearHistories = getClearHistories(tabs);
 		chrome.tabs.remove(clearHistories.map((x) => x.id));
-		const clearHistoriesLimit = getClearHistoriesLimit(clearHistories);
 		chrome.storage.local.get(
 			StorageKey.clearHistories,
-			updateClearHistoriesStorage(clearHistoriesLimit)
+			updateClearHistoriesStorage(clearHistories)
 		);
 	});
 };

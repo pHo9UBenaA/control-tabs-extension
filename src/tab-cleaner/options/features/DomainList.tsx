@@ -1,8 +1,8 @@
-import { useDisclosure, IconButton, Box, VStack } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
+import { Box, IconButton, VStack, useDisclosure } from '@chakra-ui/react';
 import React, { useRef } from 'react';
-import { ConfirmDialog, DialogProperty } from '../components/ConfirmDialog';
 import { Domain } from '../../models/storage';
+import { ConfirmDialog, DialogProperty } from '../components/ConfirmDialog';
 
 type DomainItemProps = {
 	domain: Domain;
@@ -67,7 +67,7 @@ export const DomainList: React.FC<DomainListProps> = ({ domains, handleRemoveDom
 					))
 				) : (
 					<Box color='gray.400' w='100%'>
-						No domains registered
+						No domains target
 					</Box>
 				)}
 			</VStack>
