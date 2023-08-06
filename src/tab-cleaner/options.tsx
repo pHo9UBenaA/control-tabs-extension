@@ -20,7 +20,7 @@ import { ClearHistoryList } from './options/features/ClearHistoryList';
 import { DomainInput } from './options/features/DomainInput';
 import { DomainList } from './options/features/DomainList';
 import { FileUploadButton } from './options/features/FileUploadButton';
-import { RemoveNewTabToggle } from './options/features/RemoveNewTabsToggle';
+import { SettingToggle } from './options/features/SettingToggle';
 import { SelectCleanHistoryLimit } from './options/features/SelectCleanHistoryLimit';
 
 const initDialogProperty: DialogProperty = {
@@ -89,20 +89,30 @@ const domainRegister = async (
 	});
 };
 
-const useRemoveNewTabToggleChange = (): [
-	Setting['removeNewTab'],
-	React.Dispatch<React.SetStateAction<Setting['removeNewTab']>>,
-] => {
-	const [isChecked, setIsChecked] = useState<Setting['removeNewTab']>(false);
+type SettingToggleType = Exclude<
+	Setting['enableAutoRemoveNewTab'] | Setting['removeOtherDomains'],
+	undefined
+>;
+const useSettingToggleChange = (
+	key: Extract<keyof Setting, 'enableAutoRemoveNewTab' | 'removeOtherDomains'>
+): [string, SettingToggleType, React.Dispatch<React.SetStateAction<SettingToggleType>>] => {
+	const toggleButtonLabel = (
+		{
+			enableAutoRemoveNewTab: 'Clear new tab?',
+			removeOtherDomains: 'Clear Non-Registered Domains?',
+		} satisfies { [K in typeof key]: string }
+	)[key];
+
+	const [isChecked, setIsChecked] = useState<SettingToggleType>(false);
 
 	useEffect(() => {
 		(async () => {
 			const setting: Setting = await getStorageSettingValue(StorageKey.setting);
-			setIsChecked(setting?.removeNewTab || false);
+			setIsChecked(setting?.[key] || false);
 		})();
-	}, []);
+	}, [key]);
 
-	return [isChecked, setIsChecked];
+	return [toggleButtonLabel, isChecked, setIsChecked];
 };
 
 const useStorageChange = <T extends (Domain | ClearHistory)[]>(
@@ -143,28 +153,39 @@ const useClearHistoriesLimit = (): [
 	return [clearHistoriesLimit, setClearHistoriesLimit];
 };
 
+type test = keyof Setting;
+
 const Options = () => {
 	const cancelRef = useRef(null);
 	const [dialogProperty, setDialogProperty] = useState<DialogProperty>(initDialogProperty);
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const [isChecked, setIsChecked] = useRemoveNewTabToggleChange();
+	const [removeNewTabLabel, removeNewTabIsChecked, removeNewTabSetIsChecked] =
+		useSettingToggleChange('enableAutoRemoveNewTab');
+	const [removeOtherDomainsLabel, removeOtherDomainsIsChecked, removeOtherDomainsSetIsChecked] =
+		useSettingToggleChange('removeOtherDomains');
 	const [domains, setDomains] = useStorageChange<Domain[]>(StorageKey.domains);
 	const [clearHistories, setClearHistories] = useStorageChange<ClearHistory[]>(
 		StorageKey.clearHistories
 	);
 	const [clearHistoriesLimit, setClearHistoriesLimit] = useClearHistoriesLimit();
 
-	const handleClickRemoveNewTabToggle = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		const value = event.target.checked;
-		setIsChecked(value);
-		const storageValue: Setting = await new Promise((resolve) => {
-			chrome.storage.local.get(StorageKey.setting, (result) => {
-				resolve(result[StorageKey.setting] || {});
+	const handleClickSettingToggle =
+		(
+			key: keyof Setting,
+			setIsChecked: React.Dispatch<React.SetStateAction<SettingToggleType>>
+		) =>
+		async (event: React.ChangeEvent<HTMLInputElement>) => {
+			const value = event.target.checked;
+			setIsChecked(value);
+			const storageValue: Setting = await new Promise((resolve) => {
+				chrome.storage.local.get(StorageKey.setting, (result) => {
+					resolve(result[StorageKey.setting] || {});
+				});
 			});
-		});
-		const newStorageValue = { ...storageValue, removeNewTab: value };
-		chrome.storage.local.set({ [StorageKey.setting]: newStorageValue });
-	};
+			// keyをもとにnewStorageValueを作成
+			const newStorageValue = { ...storageValue, [key]: value };
+			chrome.storage.local.set({ [StorageKey.setting]: newStorageValue });
+		};
 
 	const handleDomainSubmit = (urlHostname: string) => {
 		domainRegister(urlHostname, setDomains);
@@ -243,9 +264,21 @@ const Options = () => {
 						Tab Cleaner
 					</Heading>
 					<Stack direction='row' spacing={2} align='center'>
-						<RemoveNewTabToggle
-							isChecked={isChecked}
-							onClickToggle={handleClickRemoveNewTabToggle}
+						<SettingToggle
+							label={removeOtherDomainsLabel}
+							isChecked={removeOtherDomainsIsChecked}
+							onClickToggle={handleClickSettingToggle(
+								'removeOtherDomains',
+								removeOtherDomainsSetIsChecked
+							)}
+						/>
+						<SettingToggle
+							label={removeNewTabLabel}
+							isChecked={removeNewTabIsChecked}
+							onClickToggle={handleClickSettingToggle(
+								'enableAutoRemoveNewTab',
+								removeNewTabSetIsChecked
+							)}
 						/>
 						<Button onClick={handleClearTabEvent}>Execute</Button>
 					</Stack>
@@ -293,7 +326,7 @@ const Options = () => {
 
 const App = () => (
 	<ChakraProvider>
-		<Box maxWidth='800px' m='auto' mt={3} p={5}>
+		<Box maxWidth='992px' m='auto' my={3} p={5}>
 			<Options />
 		</Box>
 	</ChakraProvider>
