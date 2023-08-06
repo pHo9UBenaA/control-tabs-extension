@@ -1,8 +1,8 @@
 import { StorageKey } from '../constants/storage';
 import { ClearHistory, Domain, Setting } from '../models/storage';
 
-const removeNewTabs = (removeNewTab: Setting['removeNewTab']) => {
-	if (!removeNewTab) {
+const enableAutoRemoveNewTabs = (enableAutoRemoveNewTab: Setting['enableAutoRemoveNewTab']) => {
+	if (!enableAutoRemoveNewTab) {
 		return;
 	}
 
@@ -29,7 +29,8 @@ const removeNewTabs = (removeNewTab: Setting['removeNewTab']) => {
 
 const removeTabsByDomain = (
 	domains: Domain[],
-	clearHistoriesLimit: Setting['clearHistoriesLimit']
+	clearHistoriesLimit: Setting['clearHistoriesLimit'],
+	removeOtherDomains: Setting['removeOtherDomains']
 ) => {
 	const getClearHistories = (tabs: chrome.tabs.Tab[]): ClearHistory[] => {
 		return tabs
@@ -41,6 +42,21 @@ const removeTabsByDomain = (
 					console.error('Tab id is not defined. details: ', tab);
 					return;
 				}
+
+				if (removeOtherDomains) {
+					// TODO: removeOtherDomains
+					const isWhitelisted = domains.some((domain) => {
+						if (typeof domain === 'string') {
+							return url?.includes(domain);
+						}
+						return url?.includes(domain.name);
+					});
+					if (isWhitelisted) {
+						return;
+					}
+					return { id, title, url };
+				}
+				
 				return { id, title, url };
 			})
 			.filter((x): x is ClearHistory => x !== undefined);
@@ -60,20 +76,22 @@ const removeTabsByDomain = (
 				...clearHistories,
 				...prevClearHistories,
 			]);
-			console.log(updateClearHistories);
 			chrome.storage.local.set({
 				[StorageKey.clearHistories]: updateClearHistories,
 			});
 		};
 
-	const tabsQuery: chrome.tabs.QueryInfo = {
-		url: domains.map((domain) => {
-			if (typeof domain === 'string') {
-				return `*://${domain}/*`;
-			}
-			return `*://${domain.name}/*`;
-		}),
-	};
+	// TODO: removeOtherDomains
+	const tabsQuery: chrome.tabs.QueryInfo = removeOtherDomains
+		? {}
+		: {
+				url: domains.map((domain) => {
+					if (typeof domain === 'string') {
+						return `*://${domain}/*`;
+					}
+					return `*://${domain.name}/*`;
+				}),
+		  };
 
 	chrome.tabs.query(tabsQuery, (tabs) => {
 		const clearHistories = getClearHistories(tabs);
@@ -91,15 +109,16 @@ const handleClearTabEvent = async () => {
 			resolve(data[StorageKey.setting]);
 		});
 	});
-	const removeNewTab = setting?.removeNewTab || false;
-	removeNewTabs(removeNewTab);
+	const enableAutoRemoveNewTab = setting?.enableAutoRemoveNewTab || false;
+	enableAutoRemoveNewTabs(enableAutoRemoveNewTab);
 
 	const domains = await new Promise<Domain[]>((resolve) => {
 		chrome.storage.local.get(StorageKey.domains, (data) => {
 			resolve(data[StorageKey.domains]);
 		});
 	});
-	removeTabsByDomain(domains, setting?.clearHistoriesLimit);
+	const removeOtherDomains = setting?.removeOtherDomains || false;
+	removeTabsByDomain(domains, setting?.clearHistoriesLimit, removeOtherDomains);
 };
 
 export { handleClearTabEvent };

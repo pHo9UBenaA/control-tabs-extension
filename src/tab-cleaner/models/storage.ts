@@ -79,7 +79,7 @@ type Setting = {
 	 * @type {boolean}
 	 * @memberof Setting
 	 */
-	removeNewTab: boolean;
+	enableAutoRemoveNewTab: boolean;
 	/**
 	 * クリア履歴の削除上限
 	 *
@@ -87,6 +87,13 @@ type Setting = {
 	 * @memberof Setting
 	 */
 	clearHistoriesLimit?: number;
+	/**
+	 * 登録外ドメインタブの一括削除
+	 *
+	 * @type {boolean}
+	 * @memberof Setting
+	 */
+	removeOtherDomains?: boolean;
 };
 
 export { ClearHistory, Domain, Setting };
