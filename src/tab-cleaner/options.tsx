@@ -95,14 +95,11 @@ type SettingToggleType = Exclude<
 >;
 const useSettingToggleChange = (
 	key: Extract<keyof Setting, 'enableAutoRemoveNewTab' | 'removeOtherDomains'>
-): [string, SettingToggleType, React.Dispatch<React.SetStateAction<SettingToggleType>>] => {
-	const toggleButtonLabel = (
-		{
-			enableAutoRemoveNewTab: 'Clear new tab?',
-			removeOtherDomains: 'Clear Non-Registered Domains?',
-		} satisfies { [K in typeof key]: string }
-	)[key];
-
+): [
+	typeof key,
+	SettingToggleType,
+	React.Dispatch<React.SetStateAction<SettingToggleType>>,
+] => {
 	const [isChecked, setIsChecked] = useState<SettingToggleType>(false);
 
 	useEffect(() => {
@@ -112,7 +109,7 @@ const useSettingToggleChange = (
 		})();
 	}, [key]);
 
-	return [toggleButtonLabel, isChecked, setIsChecked];
+	return [key, isChecked, setIsChecked];
 };
 
 const useStorageChange = <T extends (Domain | ClearHistory)[]>(
@@ -153,15 +150,13 @@ const useClearHistoriesLimit = (): [
 	return [clearHistoriesLimit, setClearHistoriesLimit];
 };
 
-type test = keyof Setting;
-
 const Options = () => {
 	const cancelRef = useRef(null);
 	const [dialogProperty, setDialogProperty] = useState<DialogProperty>(initDialogProperty);
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const [removeNewTabLabel, removeNewTabIsChecked, removeNewTabSetIsChecked] =
+	const [removeNewTabId, removeNewTabIsChecked, removeNewTabSetIsChecked] =
 		useSettingToggleChange('enableAutoRemoveNewTab');
-	const [removeOtherDomainsLabel, removeOtherDomainsIsChecked, removeOtherDomainsSetIsChecked] =
+	const [removeOtherDomainsId, removeOtherDomainsIsChecked, removeOtherDomainsSetIsChecked] =
 		useSettingToggleChange('removeOtherDomains');
 	const [domains, setDomains] = useStorageChange<Domain[]>(StorageKey.domains);
 	const [clearHistories, setClearHistories] = useStorageChange<ClearHistory[]>(
@@ -265,7 +260,7 @@ const Options = () => {
 					</Heading>
 					<Stack direction='row' spacing={2} align='center'>
 						<SettingToggle
-							label={removeOtherDomainsLabel}
+							labelId={removeOtherDomainsId}
 							isChecked={removeOtherDomainsIsChecked}
 							onClickToggle={handleClickSettingToggle(
 								'removeOtherDomains',
@@ -273,7 +268,7 @@ const Options = () => {
 							)}
 						/>
 						<SettingToggle
-							label={removeNewTabLabel}
+							labelId={removeNewTabId}
 							isChecked={removeNewTabIsChecked}
 							onClickToggle={handleClickSettingToggle(
 								'enableAutoRemoveNewTab',

@@ -33,33 +33,31 @@ const removeTabsByDomain = (
 	removeOtherDomains: Setting['removeOtherDomains']
 ) => {
 	const getClearHistories = (tabs: chrome.tabs.Tab[]): ClearHistory[] => {
-		return tabs
-			.slice()
-			.reverse()
-			.map((tab) => {
-				const { id, title, url } = tab;
-				if (!id) {
-					console.error('Tab id is not defined. details: ', tab);
-					return;
-				}
+		const isTabWhitelisted = (url: string | undefined): boolean => {
+			if (!url) {
+				return false;
+			}
 
-				if (removeOtherDomains) {
-					// TODO: removeOtherDomains
-					const isWhitelisted = domains.some((domain) => {
-						if (typeof domain === 'string') {
-							return url?.includes(domain);
-						}
-						return url?.includes(domain.name);
-					});
-					if (isWhitelisted) {
-						return;
-					}
-					return { id, title, url };
-				}
-				
-				return { id, title, url };
-			})
-			.filter((x): x is ClearHistory => x !== undefined);
+			return domains.some((domain) => {
+				const domainName = typeof domain === 'string' ? domain : domain.name;
+				return url.includes(domainName);
+			});
+		};
+
+		const clearHistories = tabs
+			.filter(({ id }) => id)
+			.filter(({ url }) => !(removeOtherDomains && isTabWhitelisted(url)))
+			.map(({ id, title, url }) => ({ id, title, url }))
+			// TODO
+			.filter((x): x is ClearHistory => x.id !== undefined);
+
+		tabs.forEach((tab) => {
+			if (!tab.id) {
+				console.error('Tab id is not defined. details: ', tab);
+			}
+		});
+
+		return clearHistories;
 	};
 
 	const getClearHistoriesLimit = (clearHistories: ClearHistory[]): ClearHistory[] => {
@@ -86,10 +84,8 @@ const removeTabsByDomain = (
 		? {}
 		: {
 				url: domains.map((domain) => {
-					if (typeof domain === 'string') {
-						return `*://${domain}/*`;
-					}
-					return `*://${domain.name}/*`;
+					const domainName = typeof domain === 'string' ? domain : domain.name;
+					return `*://${domainName}/*`;
 				}),
 		  };
 
