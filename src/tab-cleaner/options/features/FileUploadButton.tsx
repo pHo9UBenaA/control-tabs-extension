@@ -2,7 +2,7 @@ import { Box, Button, Input, Tooltip } from '@chakra-ui/react';
 import React, { useRef } from 'react';
 
 type FileUploadButtonProps = {
-	onFileUpload: (content: string) => void;
+	onFileUpload: (content: string) => Promise<void>;
 };
 
 const readFileAsText = (
