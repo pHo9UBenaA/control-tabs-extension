@@ -1,11 +1,11 @@
 import { Button, Flex, FormControl, FormErrorMessage, Input } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 type DomainInputProps = {
 	onDomainSubmit: (value: string) => void;
 };
 
-export const DomainInput: React.FC<DomainInputProps> = ({ onDomainSubmit }) => {
+export function DomainInput({ onDomainSubmit }: DomainInputProps) {
 	const [domainInputValue, setDomainInputValue] = useState('');
 	const [error, setError] = useState('');
 
@@ -45,4 +45,4 @@ export const DomainInput: React.FC<DomainInputProps> = ({ onDomainSubmit }) => {
 			<FormErrorMessage>{error}</FormErrorMessage>
 		</FormControl>
 	);
-};
+}

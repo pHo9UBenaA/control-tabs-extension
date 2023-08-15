@@ -1,7 +1,7 @@
-import { Switch, FormControl, FormLabel, Tooltip } from '@chakra-ui/react';
+import { QuestionOutlineIcon } from '@chakra-ui/icons';
+import { FormControl, FormLabel, Switch, Tooltip } from '@chakra-ui/react';
 import React from 'react';
 import { Setting } from '../../models/storage';
-import { QuestionOutlineIcon } from '@chakra-ui/icons';
 
 type SettingToggleProps = {
 	labelId: Extract<keyof Setting, 'enableAutoRemoveNewTab' | 'removeOtherDomains'>;
@@ -9,11 +9,7 @@ type SettingToggleProps = {
 	onClickToggle: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export const SettingToggle: React.FC<SettingToggleProps> = ({
-	labelId,
-	isChecked,
-	onClickToggle,
-}) => {
+export function SettingToggle({ labelId, isChecked, onClickToggle }: SettingToggleProps) {
 	const toggleButtonLabel = (
 		{
 			enableAutoRemoveNewTab: 'Clear new tab?',
@@ -40,6 +36,6 @@ export const SettingToggle: React.FC<SettingToggleProps> = ({
 			<Switch id={`switch_${labelId}`} isChecked={isChecked} onChange={onClickToggle} />
 		</FormControl>
 	);
-};
+}
 
 export default SettingToggle;

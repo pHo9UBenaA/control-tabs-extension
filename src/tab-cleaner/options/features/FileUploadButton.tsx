@@ -25,7 +25,7 @@ const readFileAsText = (
 	reader.readAsText(file);
 };
 
-export const FileUploadButton: React.FC<FileUploadButtonProps> = ({ onFileUpload }) => {
+export function FileUploadButton({ onFileUpload }: FileUploadButtonProps) {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,4 +73,4 @@ export const FileUploadButton: React.FC<FileUploadButtonProps> = ({ onFileUpload
 			</Tooltip>
 		</>
 	);
-};
+}
