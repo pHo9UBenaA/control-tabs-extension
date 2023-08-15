@@ -19,6 +19,7 @@ import { ConfirmDialog, DialogProperty } from './options/components/ConfirmDialo
 import { ClearHistoryList } from './options/features/ClearHistoryList';
 import { DomainInput } from './options/features/DomainInput';
 import { DomainList } from './options/features/DomainList';
+import { FileDownloadButton } from './options/features/FileDownloadButton';
 import { FileUploadButton } from './options/features/FileUploadButton';
 import { SettingToggle } from './options/features/SettingToggle';
 import { SelectCleanHistoryLimit } from './options/features/SelectCleanHistoryLimit';
@@ -95,11 +96,7 @@ type SettingToggleType = Exclude<
 >;
 const useSettingToggleChange = (
 	key: Extract<keyof Setting, 'enableAutoRemoveNewTab' | 'removeOtherDomains'>
-): [
-	typeof key,
-	SettingToggleType,
-	React.Dispatch<React.SetStateAction<SettingToggleType>>,
-] => {
+): [typeof key, SettingToggleType, React.Dispatch<React.SetStateAction<SettingToggleType>>] => {
 	const [isChecked, setIsChecked] = useState<SettingToggleType>(false);
 
 	useEffect(() => {
@@ -118,11 +115,11 @@ const useStorageChange = <T extends (Domain | ClearHistory)[]>(
 	const [value, setValue] = useState<T>();
 
 	const getCallback = (data: { [key: string]: T }) => {
-		setValue(data[key] || []);
+		setValue(data[key] || undefined);
 	};
 	const onChangeCallback = (changes: { [key: string]: chrome.storage.StorageChange }) => {
 		if (changes[key]) {
-			setValue(changes[key].newValue || []);
+			setValue(changes[key].newValue || undefined);
 		}
 	};
 	useEffect(() => {
@@ -184,6 +181,38 @@ const Options = () => {
 
 	const handleDomainSubmit = (urlHostname: string) => {
 		domainRegister(urlHostname, setDomains);
+	};
+
+	const handleFileDownload = async () => {
+		const getFormattedDate = () => {
+			const date = new Date();
+			const formattedDate = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(
+				2,
+				'0'
+			)}${String(date.getDate()).padStart(2, '0')}${String(date.getHours()).padStart(
+				2,
+				'0'
+			)}${String(date.getMinutes()).padStart(2, '0')}${String(date.getSeconds()).padStart(
+				2,
+				'0'
+			)}`.concat(String(date.getMilliseconds()).padStart(3, '0'));
+			return formattedDate;
+		};
+
+		if (!domains) {
+			console.error('domains is empty')
+			return;
+		}
+		const content = domains
+			.map((domain) => (typeof domain === 'string' ? domain : domain.name))
+			.join('\n');
+		const blob = new Blob([content], { type: 'text/plain' });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `domains_${getFormattedDate()}.txt`;
+		a.click();
+		URL.revokeObjectURL(url);
 	};
 
 	const handleFileUpload = async (content: string) => {
@@ -286,6 +315,7 @@ const Options = () => {
 						Target Domains
 					</Heading>
 					<Stack direction='row' spacing={2} align='center'>
+						<FileDownloadButton isDisabled={!domains} onFileDownload={handleFileDownload} />
 						<FileUploadButton onFileUpload={handleFileUpload} />
 						{/* TODO: minWidth */}
 						<Button onClick={handleClearDomains} size='sm' minWidth='60px'>
