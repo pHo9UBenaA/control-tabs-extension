@@ -9,7 +9,7 @@ import {
 	VStack,
 	useDisclosure,
 } from '@chakra-ui/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { v4 as uuid_v4 } from 'uuid';
 import { StorageKey } from './constants/storage';
@@ -21,8 +21,16 @@ import { DomainInput } from './options/features/DomainInput';
 import { DomainList } from './options/features/DomainList';
 import { FileDownloadButton } from './options/features/FileDownloadButton';
 import { FileUploadButton } from './options/features/FileUploadButton';
-import { SettingToggle } from './options/features/SettingToggle';
 import { SelectCleanHistoryLimit } from './options/features/SelectCleanHistoryLimit';
+import { SettingToggle } from './options/features/SettingToggle';
+import { useClearHistoriesLimit } from './options/hooks/useClearHistoriesLimit';
+import { useSettingToggleChange } from './options/hooks/useSettingToggleChange';
+import { useStorageChange } from './options/hooks/useStorageChange';
+
+type SettingToggleType = Exclude<
+	Setting['enableAutoRemoveNewTab'] | Setting['removeOtherDomains'],
+	undefined
+>;
 
 const initDialogProperty: DialogProperty = {
 	title: '',
@@ -90,64 +98,7 @@ const domainRegister = async (
 	});
 };
 
-type SettingToggleType = Exclude<
-	Setting['enableAutoRemoveNewTab'] | Setting['removeOtherDomains'],
-	undefined
->;
-const useSettingToggleChange = (
-	key: Extract<keyof Setting, 'enableAutoRemoveNewTab' | 'removeOtherDomains'>
-): [typeof key, SettingToggleType, React.Dispatch<React.SetStateAction<SettingToggleType>>] => {
-	const [isChecked, setIsChecked] = useState<SettingToggleType>(false);
-
-	useEffect(() => {
-		(async () => {
-			const setting: Setting = await getStorageSettingValue(StorageKey.setting);
-			setIsChecked(setting?.[key] || false);
-		})();
-	}, [key]);
-
-	return [key, isChecked, setIsChecked];
-};
-
-const useStorageChange = <T extends (Domain | ClearHistory)[]>(
-	key: string
-): [T | undefined, React.Dispatch<React.SetStateAction<T | undefined>>] => {
-	const [value, setValue] = useState<T>();
-
-	const getCallback = (data: { [key: string]: T }) => {
-		setValue(data[key] || undefined);
-	};
-	const onChangeCallback = (changes: { [key: string]: chrome.storage.StorageChange }) => {
-		if (changes[key]) {
-			setValue(changes[key].newValue || undefined);
-		}
-	};
-	useEffect(() => {
-		chrome.storage.local.get(key, (data) => getCallback(data));
-		chrome.storage.local.onChanged.addListener((changes) => onChangeCallback(changes));
-	}, [key]);
-
-	return [value, setValue];
-};
-
-const useClearHistoriesLimit = (): [
-	Setting['clearHistoriesLimit'],
-	React.Dispatch<React.SetStateAction<Setting['clearHistoriesLimit']>>,
-] => {
-	const [clearHistoriesLimit, setClearHistoriesLimit] =
-		useState<Setting['clearHistoriesLimit']>();
-
-	useEffect(() => {
-		(async () => {
-			const setting: Setting = await getStorageSettingValue(StorageKey.setting);
-			setClearHistoriesLimit(setting?.clearHistoriesLimit);
-		})();
-	}, []);
-
-	return [clearHistoriesLimit, setClearHistoriesLimit];
-};
-
-const Options = () => {
+function Options() {
 	const cancelRef = useRef(null);
 	const [dialogProperty, setDialogProperty] = useState<DialogProperty>(initDialogProperty);
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -200,7 +151,7 @@ const Options = () => {
 		};
 
 		if (!domains) {
-			console.error('domains is empty')
+			console.error('domains is empty');
 			return;
 		}
 		const content = domains
@@ -315,7 +266,10 @@ const Options = () => {
 						Target Domains
 					</Heading>
 					<Stack direction='row' spacing={2} align='center'>
-						<FileDownloadButton isDisabled={!domains} onFileDownload={handleFileDownload} />
+						<FileDownloadButton
+							isDisabled={!domains}
+							onFileDownload={handleFileDownload}
+						/>
 						<FileUploadButton onFileUpload={handleFileUpload} />
 						{/* TODO: minWidth */}
 						<Button onClick={handleClearDomains} size='sm' minWidth='60px'>
@@ -347,15 +301,17 @@ const Options = () => {
 			</Stack>
 		</VStack>
 	);
-};
+}
 
-const App = () => (
-	<ChakraProvider>
-		<Box maxWidth='992px' m='auto' my={3} p={5}>
-			<Options />
-		</Box>
-	</ChakraProvider>
-);
+function App() {
+	return (
+		<ChakraProvider>
+			<Box maxWidth='992px' m='auto' my={3} p={5}>
+				<Options />
+			</Box>
+		</ChakraProvider>
+	);
+}
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

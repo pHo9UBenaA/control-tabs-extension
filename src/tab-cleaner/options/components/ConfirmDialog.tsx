@@ -1,11 +1,11 @@
 import {
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogContent,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogOverlay,
-    Button,
+	AlertDialog,
+	AlertDialogBody,
+	AlertDialogContent,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogOverlay,
+	Button,
 } from '@chakra-ui/react';
 import React from 'react';
 
@@ -23,12 +23,7 @@ type ConfirmDialogProps = {
 	cancelRef: React.RefObject<HTMLButtonElement>;
 };
 
-export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
-	isOpen,
-	onClose,
-	dialogProperty,
-	cancelRef,
-}) => {
+export function ConfirmDialog({ isOpen, onClose, dialogProperty, cancelRef }: ConfirmDialogProps) {
 	const handleActionAndClose = () => {
 		dialogProperty.handleAction();
 		onClose();
@@ -56,4 +51,4 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 			</AlertDialogOverlay>
 		</AlertDialog>
 	);
-};
+}

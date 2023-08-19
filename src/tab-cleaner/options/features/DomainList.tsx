@@ -34,7 +34,7 @@ type DomainListProps = {
 	handleRemoveDomain: (uuid: string) => void;
 };
 
-export const DomainList: React.FC<DomainListProps> = ({ domains, handleRemoveDomain }) => {
+export function DomainList({ domains, handleRemoveDomain }: DomainListProps) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const cancelRef = useRef<HTMLButtonElement>(null);
 	const [currentDomain, setCurrentDomain] = React.useState<string | null>(null);
@@ -79,4 +79,4 @@ export const DomainList: React.FC<DomainListProps> = ({ domains, handleRemoveDom
 			/>
 		</>
 	);
-};
+}

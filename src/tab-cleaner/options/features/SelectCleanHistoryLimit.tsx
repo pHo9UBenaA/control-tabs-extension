@@ -6,10 +6,10 @@ type SelectCleanHistoryLimitProps = {
 	onSelectChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 };
 
-export const SelectCleanHistoryLimit: React.FC<SelectCleanHistoryLimitProps> = ({
+export function SelectCleanHistoryLimit({
 	clearHistoriesLimit,
 	onSelectChange,
-}) => {
+}: SelectCleanHistoryLimitProps) {
 	return (
 		<Tooltip label='Applied at the time of executing clear tabs' placement='top'>
 			<Select
@@ -24,4 +24,4 @@ export const SelectCleanHistoryLimit: React.FC<SelectCleanHistoryLimitProps> = (
 			</Select>
 		</Tooltip>
 	);
-};
+}
