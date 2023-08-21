@@ -26,25 +26,13 @@ import { SettingToggle } from './options/features/SettingToggle';
 import { useClearHistoriesLimit } from './options/hooks/useClearHistoriesLimit';
 import { useSettingToggleChange } from './options/hooks/useSettingToggleChange';
 import { useStorageChange } from './options/hooks/useStorageChange';
-
-type SettingToggleType = Exclude<
-	Setting['enableAutoRemoveNewTab'] | Setting['removeOtherDomains'],
-	undefined
->;
+import { getStorageSettingValue } from './options/states/chromeStorage';
 
 const initDialogProperty: DialogProperty = {
 	title: '',
 	confirmMessage: '',
 	actionMessage: 'Clear',
 	handleAction: () => {},
-};
-
-const getStorageSettingValue = (key: string): Promise<Setting> => {
-	return new Promise((resolve) => {
-		chrome.storage.local.get(key, (result) => {
-			resolve(result[key] || {});
-		});
-	});
 };
 
 const domainRegister = async (
@@ -113,10 +101,7 @@ function Options() {
 	const [clearHistoriesLimit, setClearHistoriesLimit] = useClearHistoriesLimit();
 
 	const handleClickSettingToggle =
-		(
-			key: keyof Setting,
-			setIsChecked: React.Dispatch<React.SetStateAction<SettingToggleType>>
-		) =>
+		(key: keyof Setting, setIsChecked: ReturnType<typeof useSettingToggleChange>[2]) =>
 		async (event: React.ChangeEvent<HTMLInputElement>) => {
 			const value = event.target.checked;
 			setIsChecked(value);
